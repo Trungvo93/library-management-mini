@@ -1,8 +1,30 @@
-import React from "react";
+import { React, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import recoveryStyles from "../css/RecoveryPass.module.scss";
-import { TextField, Box, Button } from "@mui/material";
+import {
+  TextField,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+} from "@mui/material";
 const RecoveryPass = () => {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleLogin = () => {
+    navigate("/");
+  };
   return (
     <Container>
       <Row className="main">
@@ -31,13 +53,27 @@ const RecoveryPass = () => {
                   m: "10px auto 0",
                   display: "block",
                   p: "10px 20px",
-                }}>
-                SUBMIT
+                }}
+                onClick={handleClickOpen}>
+                RESET PASSWORD
               </Button>
             </Box>
           </div>
         </Col>
       </Row>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogContent>
+          <DialogContentText>
+            New password has been sent to email
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLogin}>Sign in</Button>
+          <Button onClick={handleClose} autoFocus>
+            Stay here
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

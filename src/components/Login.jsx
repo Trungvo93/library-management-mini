@@ -1,8 +1,9 @@
 import React from "react";
-import { useState } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { vertifyLogin, fetchUsers } from "../redux/loginSlice";
 import logo_library from "../images/logo-library.png";
 import loginStyles from "../css/Login.module.scss";
 import {
@@ -27,7 +28,12 @@ const Login = () => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-
+  const login = useSelector((state) => state.login);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, []);
+  console.log(login);
   return (
     <Container>
       <Row className={`${loginStyles.main}`}>

@@ -1,5 +1,6 @@
 import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { Container, Row, Col } from "react-bootstrap";
 import recoveryStyles from "../css/RecoveryPass.module.scss";
 import {
@@ -13,14 +14,31 @@ import {
   Alert,
   Snackbar,
 } from "@mui/material";
+
 const RecoveryPass = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const [formReset, setFormReset] = useState({ username: "", email: "" });
+  const handleClickOpen = async (e) => {
+    e.preventDefault();
 
+    const res = await axios.get(
+      `https://63e4ba3dc04baebbcdaa9a7e.mockapi.io/users/`
+    );
+    const checkAccount = res.data.find(
+      (item) =>
+        item.username === formReset.username && item.email === formReset.email
+    );
+    if (checkAccount != undefined) {
+      setOpen(true);
+    } else {
+      handleShowAlert();
+    }
+  };
+  const handleChange = (e) => {
+    setFormReset({ ...formReset, [e.target.name]: e.target.value });
+  };
   const handleClose = () => {
     setOpen(false);
   };
@@ -42,45 +60,45 @@ const RecoveryPass = () => {
           lg={6}
           className={`${recoveryStyles["recovery-form"]} my-5 mx-auto `}>
           <div className="shadow p-5 rounded">
-            <Button
-              variant="contained"
-              sx={{
-                m: "10px auto 0",
-                display: "block",
-                p: "10px 20px",
-              }}
-              onClick={() => {
-                handleShowAlert();
-              }}>
-              Test
-            </Button>
             <h3 className="text-center fw-bold">Forgot Password</h3>
-            <Box>
-              <TextField
-                label="Your Username"
-                variant="outlined"
-                margin="normal"
-                fullWidth
-              />
-              <TextField
-                label="Your Email"
-                variant="outlined"
-                margin="normal"
-                fullWidth
-                type="email"
-              />
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{
-                  m: "10px auto 0",
-                  display: "block",
-                  p: "10px 20px",
-                }}
-                onClick={handleClickOpen}>
-                RESET PASSWORD
-              </Button>
-            </Box>
+            <form onSubmit={handleClickOpen}>
+              <Box>
+                <TextField
+                  label="Your Username"
+                  variant="outlined"
+                  margin="normal"
+                  fullWidth
+                  name="username"
+                  value={formReset.username}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                />
+                <TextField
+                  label="Your Email"
+                  variant="outlined"
+                  margin="normal"
+                  fullWidth
+                  type="email"
+                  name="email"
+                  value={formReset.email}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    m: "10px auto 0",
+                    display: "block",
+                    p: "10px 20px",
+                  }}>
+                  RESET PASSWORD
+                </Button>
+              </Box>
+            </form>
           </div>
         </Col>
       </Row>

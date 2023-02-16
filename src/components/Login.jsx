@@ -1,9 +1,11 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import axios from "axios";
+import { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { vertifyLogin, fetchUsers } from "../redux/loginSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { vertifyLogin } from "../redux/loginSlice";
 import logo_library from "../images/logo-library.png";
 import loginStyles from "../css/Login.module.scss";
 import {
@@ -18,6 +20,8 @@ import {
   Checkbox,
   FormGroup,
   FormControlLabel,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 const Login = () => {
@@ -28,12 +32,38 @@ const Login = () => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-  const login = useSelector((state) => state.login);
+
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(fetchUsers());
-  }, []);
-  console.log(login);
+  const navigate = useNavigate();
+  const [formLogin, setFormLogin] = useState({ username: "", password: "" });
+  const [openAlert, setOpenAlert] = useState(false);
+  const handleChange = (e) => {
+    setFormLogin({ ...formLogin, [e.target.name]: e.target.value });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const res = await axios.get(
+      `https://63e4ba3dc04baebbcdaa9a7e.mockapi.io/users/`
+    );
+    const checkAccount = res.data.find(
+      (item) =>
+        item.username === formLogin.username &&
+        item.password === formLogin.password
+    );
+    if (checkAccount != undefined) {
+      dispatch(vertifyLogin(checkAccount));
+      navigate("/index");
+    } else {
+      handleShowAlert();
+    }
+  };
+  const handleShowAlert = () => {
+    setOpenAlert(true);
+  };
+
+  const handleCloseAlert = (event, reason) => {
+    setOpenAlert(false);
+  };
   return (
     <Container>
       <Row className={`${loginStyles.main}`}>
@@ -47,64 +77,85 @@ const Login = () => {
         <Col lg={6} className={`${loginStyles["login-form"]} my-5`}>
           <div className="shadow p-5 rounded">
             <h3 className="text-center fw-bold">Login Account</h3>
-            <Box>
-              <TextField
-                label="Username"
-                variant="outlined"
-                margin="normal"
-                fullWidth
-              />
-              <FormControl variant="outlined" fullWidth margin="normal">
-                <InputLabel>Password</InputLabel>
-                <OutlinedInput
-                  type={showPassword ? "text" : "password"}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end">
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  label="Password"
+            <form
+              onSubmit={(e) => {
+                handleSubmit(e);
+              }}>
+              <Box>
+                <TextField
+                  label="Username"
+                  name="username"
+                  variant="outlined"
+                  margin="normal"
+                  fullWidth
+                  onChange={(e) => handleChange(e)}
+                  value={formLogin.username}
                 />
-              </FormControl>
-              <Row>
-                <Col lg={6}>
-                  <FormGroup>
-                    <FormControlLabel
-                      control={<Checkbox />}
-                      label="Remember me"
-                    />
-                  </FormGroup>
-                </Col>
-                <Col
-                  lg={6}
-                  className="d-flex align-items-center justify-content-md-end">
-                  <Link
-                    to="recovery"
-                    className="fst-italic text-decoration-none">
-                    Forgot Password?
-                  </Link>
-                </Col>
-              </Row>
+                <FormControl variant="outlined" fullWidth margin="normal">
+                  <InputLabel>Password</InputLabel>
+                  <OutlinedInput
+                    name="password"
+                    value={formLogin.password}
+                    onChange={(e) => handleChange(e)}
+                    type={showPassword ? "text" : "password"}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end">
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Password"
+                  />
+                </FormControl>
+                <Row>
+                  <Col lg={6}>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={<Checkbox />}
+                        label="Remember me"
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col
+                    lg={6}
+                    className="d-flex align-items-center justify-content-md-end">
+                    <Link
+                      to="recovery"
+                      className="fst-italic text-decoration-none">
+                      Forgot Password?
+                    </Link>
+                  </Col>
+                </Row>
 
-              <Button
-                variant="contained"
-                sx={{
-                  m: "10px auto 0",
-                  display: "block",
-                  p: "10px 20px",
-                }}>
-                SIGN IN
-              </Button>
-            </Box>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    m: "10px auto 0",
+                    display: "block",
+                    p: "10px 20px",
+                  }}>
+                  SIGN IN
+                </Button>
+              </Box>
+            </form>
           </div>
         </Col>
       </Row>
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={4000}
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}>
+        <Alert severity="error" variant="filled" sx={{ width: "100%" }}>
+          Username or Password not correct !
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

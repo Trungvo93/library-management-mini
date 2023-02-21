@@ -5,16 +5,19 @@ import Layout from "./Layout";
 import RecoveryPass from "./RecoveryPass";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
+import { CookiesProvider } from "react-cookie";
 const Router = () => {
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Login />}></Route>
-          <Route path="recovery" element={<RecoveryPass />}></Route>
-          <Route path="index" element={<Layout />}></Route>
-        </Routes>
-      </BrowserRouter>
+      <CookiesProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Login />}></Route>
+            <Route path="recovery" element={<RecoveryPass />}></Route>
+            <Route path="index" element={<Layout />}></Route>
+          </Routes>
+        </BrowserRouter>
+      </CookiesProvider>
     </Provider>
   );
 };

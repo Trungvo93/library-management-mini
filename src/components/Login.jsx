@@ -5,6 +5,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import { vertifyLogin } from "../redux/loginSlice";
 import logo_library from "../images/logo-library.png";
 import loginStyles from "../css/Login.module.scss";
@@ -26,7 +27,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-
+  const [cookies, setCookie] = useCookies(["userLogin"]);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
@@ -52,6 +53,13 @@ const Login = () => {
     );
     if (checkAccount != undefined) {
       dispatch(vertifyLogin(checkAccount));
+      setCookie("username", checkAccount.username, {
+        path: "/",
+        maxAge: 180,
+      });
+
+      setCookie("status", "succeeded", { path: "/", maxAge: 180 });
+
       navigate("/index");
     } else {
       handleShowAlert();

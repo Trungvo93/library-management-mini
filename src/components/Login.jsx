@@ -27,7 +27,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [cookies, setCookie] = useCookies(["userLogin"]);
+  const [cookies, setCookie] = useCookies([]);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
@@ -53,6 +53,7 @@ const Login = () => {
     );
     if (checkAccount != undefined) {
       dispatch(vertifyLogin(checkAccount));
+
       setCookie("username", checkAccount.username, {
         path: "/",
         maxAge: 180,
@@ -60,7 +61,7 @@ const Login = () => {
 
       setCookie("status", "succeeded", { path: "/", maxAge: 180 });
 
-      navigate("/index");
+      navigate("/index/dashboard");
     } else {
       handleShowAlert();
     }

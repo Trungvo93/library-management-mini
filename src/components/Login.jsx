@@ -145,6 +145,7 @@ const Login = () => {
                   type="submit"
                   variant="contained"
                   sx={{
+                    width: "100%",
                     m: "10px auto 0",
                     display: "block",
                     p: "10px 20px",

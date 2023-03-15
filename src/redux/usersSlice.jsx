@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 const initialState = { usersList: [], status: false, error: null };
-const USER_URL = "https://63e4ba3dc04baebbcdaa9a7e.mockapi.io/users/";
+const USER_URL = "https://evon.cksvietnam.vn/users";
 export const fetchUsers = createAsyncThunk("login/fetchUsers", async () => {
   try {
     const res = await axios.get(USER_URL);

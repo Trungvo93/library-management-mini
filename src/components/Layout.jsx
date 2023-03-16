@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
 import { fetchUsers } from "../redux/usersSlice";
+import { updatePass } from "../redux/loginSlice";
+
 import { useDispatch, useSelector } from "react-redux";
 import { useCookies } from "react-cookie";
 import layoutStyles from "../css/Layout.module.scss";
@@ -13,15 +15,18 @@ import {
   List,
   Avatar,
   Dialog,
+  DialogTitle,
   DialogActions,
   DialogContent,
   DialogContentText,
   Button,
   Grid,
   Box,
+  TextField,
+  FormHelperText,
   Container,
 } from "@mui/material";
-
+import FormControl, { useFormControl } from "@mui/material/FormControl";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 import CachedOutlinedIcon from "@mui/icons-material/CachedOutlined";
@@ -34,6 +39,15 @@ const Layout = () => {
   const navigate = useNavigate();
   const [loginUser, setLoginUser] = useState({});
   const [openLogout, setOpenLogout] = useState(false);
+  const [openChangePassword, setOpenChangePassword] = useState(false);
+  const [formChangePass, setFormChangePass] = useState({
+    curPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+    errCurPass: true,
+    errNewPass: true,
+    errConfirmPass: true,
+  });
   const [cookies, setCookie] = useCookies();
   const [open, setOpen] = useState(false);
   let activeStyle = {
@@ -65,14 +79,68 @@ const Layout = () => {
   const handleGotoHome = () => {
     navigate("/index/dashboard");
   };
-  const handleClickLogout = () => {
+
+  //Logout
+  const handleOpenLogout = () => {
     setOpenLogout(true);
   };
   const handleCloseLogout = () => {
     setOpenLogout(false);
   };
-  const handleLogout = () => {
+  const navigateLogout = () => {
     navigate("/");
+  };
+
+  //ChangePassword
+  const regexPassword = new RegExp(
+    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/
+  );
+  const handleChangePass = (e) => {
+    setFormChangePass({ ...formChangePass, [e.target.name]: e.target.value });
+  };
+
+  const handleOpenChangePassword = () => {
+    setOpenChangePassword(true);
+  };
+  const handleCloseChangePassword = () => {
+    setOpenChangePassword(false);
+  };
+
+  const submitChangePass = () => {
+    if (formChangePass.curPassword !== loginUser.password) {
+      document.getElementById("errorCurPassword").innerText =
+        "Password do not match";
+      formChangePass.errCurPass = true;
+    } else {
+      document.getElementById("errorCurPassword").innerText = "";
+      formChangePass.errCurPass = false;
+    }
+    if (!regexPassword.test(formChangePass.newPassword)) {
+      document.getElementById("errorNewPassword").innerText =
+        "Minimum length of 8 and containing at least 1 upper, lower and numberic character (a-z,A-Z,0-9)";
+      formChangePass.errNewPass = true;
+    } else {
+      document.getElementById("errorNewPassword").innerText = "";
+      formChangePass.errNewPass = false;
+    }
+    if (formChangePass.confirmPassword !== formChangePass.newPassword) {
+      document.getElementById("errorConfirmPassword").innerText =
+        "'Confirmation Password' and 'New Password' do not match";
+      formChangePass.errConfirmPass = true;
+    } else {
+      document.getElementById("errorConfirmPassword").innerText = "";
+      formChangePass.errConfirmPass = false;
+    }
+
+    if (
+      !formChangePass.errCurPass &&
+      !formChangePass.errNewPass &&
+      !formChangePass.errConfirmPass
+    ) {
+      dispatch(
+        updatePass({ ...loginUser, password: formChangePass.newPassword })
+      );
+    }
   };
   if (cookies.username !== "undefined" && cookies.status === "succeeded") {
     // return (
@@ -195,28 +263,7 @@ const Layout = () => {
     //       </Col>
     //       <Col md={3}>c</Col>
     //     </Row>
-    //     <Dialog
-    //       open={openLogout}
-    //       onClose={handleCloseLogout}
-    //       aria-labelledby="alert-dialog-title"
-    //       aria-describedby="alert-dialog-description">
-    //       <DialogContent>
-    //         <DialogContentText color="error" sx={{ fontWeight: "bold" }}>
-    //           Do you want to logout?
-    //         </DialogContentText>
-    //       </DialogContent>
-    //       <DialogActions>
-    //         <Button
-    //           onClick={handleCloseLogout}
-    //           variant="text"
-    //           sx={{ color: "gray" }}>
-    //           Disagree
-    //         </Button>
-    //         <Button onClick={handleLogout} autoFocus variant="outlined">
-    //           Agree
-    //         </Button>
-    //       </DialogActions>
-    //     </Dialog>
+
     //   </Container>
     // );
     return (
@@ -250,16 +297,7 @@ const Layout = () => {
                   gap: 1,
                 }}>
                 <Avatar alt="Remy Sharp" src={loginUser.avatar} />
-                {/* <div className="dropdown ">
-                  <p className="m-0 fw-bold dropdown-toggle">
-                    {loginUser.name}
-                  </p>
-                  <div className="dropdown-menu">
-                    <p className="dropdown-item">ABC</p>
-                    <p className="dropdown-item">ABC</p>
-                    <p className="dropdown-item">ABC</p>
-                  </div>
-                </div> */}
+
                 <Dropdown>
                   <Dropdown.Toggle variant="none">
                     {loginUser.name}
@@ -267,8 +305,12 @@ const Layout = () => {
 
                   <Dropdown.Menu>
                     <Dropdown.Item>Your profile</Dropdown.Item>
-                    <Dropdown.Item>Change password</Dropdown.Item>
-                    <Dropdown.Item>Sign out</Dropdown.Item>
+                    <Dropdown.Item onClick={handleOpenChangePassword}>
+                      Change password
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={handleOpenLogout}>
+                      Sign out
+                    </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               </Box>
@@ -278,6 +320,91 @@ const Layout = () => {
           </Box>
         </Grid>
         <Grid></Grid>
+
+        {/* Show confirm Sign out */}
+        <Dialog
+          open={openLogout}
+          onClose={handleCloseLogout}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogContent>
+            <DialogContentText color="error" sx={{ fontWeight: "bold" }}>
+              Do you want to sign out?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleCloseLogout}
+              variant="text"
+              sx={{ color: "gray" }}>
+              No
+            </Button>
+            <Button onClick={navigateLogout} autoFocus variant="outlined">
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Show changePassword*/}
+        <Dialog
+          open={openChangePassword}
+          onClose={handleCloseChangePassword}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogTitle>Change your password</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              name="curPassword"
+              label="Current Password"
+              type="password"
+              fullWidth
+              variant="standard"
+              onChange={handleChangePass}
+            />
+            <FormHelperText
+              sx={{ color: "red" }}
+              id="errorCurPassword"></FormHelperText>
+            <TextField
+              autoFocus
+              margin="dense"
+              name="newPassword"
+              label="New Password"
+              type="password"
+              fullWidth
+              variant="standard"
+              onChange={handleChangePass}
+            />
+            <FormHelperText
+              sx={{ color: "red" }}
+              id="errorNewPassword"></FormHelperText>
+            <TextField
+              autoFocus
+              margin="dense"
+              name="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              fullWidth
+              variant="standard"
+              onChange={handleChangePass}
+            />
+            <FormHelperText
+              sx={{ color: "red" }}
+              id="errorConfirmPassword"></FormHelperText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleCloseChangePassword}
+              variant="text"
+              sx={{ color: "gray" }}>
+              Disagree
+            </Button>
+            <Button onClick={submitChangePass} autoFocus variant="outlined">
+              Agree
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Grid>
     );
   } else return <ReLogin />;

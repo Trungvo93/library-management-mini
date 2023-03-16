@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 const initialState = { usersList: [], status: false, error: null };
-const USER_URL = "https://evon.cksvietnam.vn/users";
+const USERS_URL = "https://evon.cksvietnam.vn/users";
 export const fetchUsers = createAsyncThunk("login/fetchUsers", async () => {
   try {
-    const res = await axios.get(USER_URL);
+    const res = await axios.get(USERS_URL);
 
     return [...res.data];
   } catch (error) {

@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
+import axios from "axios";
 import { fetchUsers } from "../redux/usersSlice";
-import { updatePass } from "../redux/loginSlice";
+import { updatePass, vertifyLogin } from "../redux/loginSlice";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useCookies } from "react-cookie";
@@ -106,8 +107,15 @@ const Layout = () => {
     setOpenChangePassword(false);
   };
 
-  const submitChangePass = () => {
-    if (formChangePass.curPassword !== loginUser.password) {
+  const submitChangePass = async (e) => {
+    e.preventDefault();
+
+    const res = await axios.get(
+      `https://evon.cksvietnam.vn/users/${loginUser.id}`
+    );
+    dispatch(vertifyLogin(res.data));
+
+    if (formChangePass.curPassword !== res.data.password) {
       document.getElementById("errorCurPassword").innerText =
         "Password do not match";
       formChangePass.errCurPass = true;
@@ -351,59 +359,64 @@ const Layout = () => {
           onClose={handleCloseChangePassword}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description">
-          <DialogTitle>Change your password</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="curPassword"
-              label="Current Password"
-              type="password"
-              fullWidth
-              variant="standard"
-              onChange={handleChangePass}
-            />
-            <FormHelperText
-              sx={{ color: "red" }}
-              id="errorCurPassword"></FormHelperText>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="newPassword"
-              label="New Password"
-              type="password"
-              fullWidth
-              variant="standard"
-              onChange={handleChangePass}
-            />
-            <FormHelperText
-              sx={{ color: "red" }}
-              id="errorNewPassword"></FormHelperText>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="confirmPassword"
-              label="Confirm Password"
-              type="password"
-              fullWidth
-              variant="standard"
-              onChange={handleChangePass}
-            />
-            <FormHelperText
-              sx={{ color: "red" }}
-              id="errorConfirmPassword"></FormHelperText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={handleCloseChangePassword}
-              variant="text"
-              sx={{ color: "gray" }}>
-              Disagree
-            </Button>
-            <Button onClick={submitChangePass} autoFocus variant="outlined">
-              Agree
-            </Button>
-          </DialogActions>
+          <form
+            onSubmit={(e) => {
+              submitChangePass(e);
+            }}>
+            <DialogTitle>Change your password</DialogTitle>
+            <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                name="curPassword"
+                label="Current Password"
+                type="password"
+                fullWidth
+                variant="standard"
+                onChange={handleChangePass}
+              />
+              <FormHelperText
+                sx={{ color: "red" }}
+                id="errorCurPassword"></FormHelperText>
+              <TextField
+                autoFocus
+                margin="dense"
+                name="newPassword"
+                label="New Password"
+                type="password"
+                fullWidth
+                variant="standard"
+                onChange={handleChangePass}
+              />
+              <FormHelperText
+                sx={{ color: "red" }}
+                id="errorNewPassword"></FormHelperText>
+              <TextField
+                autoFocus
+                margin="dense"
+                name="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                fullWidth
+                variant="standard"
+                onChange={handleChangePass}
+              />
+              <FormHelperText
+                sx={{ color: "red" }}
+                id="errorConfirmPassword"></FormHelperText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={handleCloseChangePassword}
+                variant="text"
+                sx={{ color: "gray" }}>
+                Disagree
+              </Button>
+              <Button type="submit" autoFocus variant="outlined">
+                Agree
+              </Button>
+            </DialogActions>
+          </form>
         </Dialog>
       </Grid>
     );

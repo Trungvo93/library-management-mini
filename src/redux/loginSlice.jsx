@@ -7,11 +7,10 @@ const initialState = {
 };
 const USER_URL = `https://evon.cksvietnam.vn/users`;
 export const updatePass = createAsyncThunk(
-  "login/fetchUsers",
+  "changePassword",
   async (payload) => {
     try {
       const res = await axios.put(`${USER_URL}/${payload.id}`, payload);
-      console.log(res.data);
       return { ...res.data };
     } catch (error) {
       return error.message;

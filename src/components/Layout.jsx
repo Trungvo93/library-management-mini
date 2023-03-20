@@ -33,6 +33,9 @@ import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 import CachedOutlinedIcon from "@mui/icons-material/CachedOutlined";
 import LibraryBooksOutlinedIcon from "@mui/icons-material/LibraryBooksOutlined";
 import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
+import EditIcon from "@mui/icons-material/Edit";
+import SyncLockIcon from "@mui/icons-material/SyncLock";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 const Layout = () => {
   const dispatch = useDispatch();
   const users = useSelector((state) => state.users);
@@ -52,9 +55,7 @@ const Layout = () => {
   const [cookies, setCookie] = useCookies();
   const [open, setOpen] = useState(false);
   let activeStyle = {
-    color: "white",
-    backgroundColor: "#2A2BE7",
-    fontWeight: "bold",
+    borderBottom: "2px solid #1c79c0",
   };
   let noneActiveStyle = {
     color: `gray`,
@@ -151,133 +152,11 @@ const Layout = () => {
     }
   };
   if (cookies.username !== "undefined" && cookies.status === "succeeded") {
-    // return (
-    //   <Container fluid>
-    //     <Row>
-    //       <Col md={2} className="p-0">
-    //         <List
-    //           className={`${layoutStyles.menu}`}
-    //           sx={{ width: "100%" }}
-    //           component="nav">
-    //           <ListItemButton onClick={handleGotoHome} className="my-3">
-    //             <div className={` d-flex gap-3 my-3`}>
-    //               <img
-    //                 src={logoLibrary}
-    //                 alt=""
-    //                 className={`${layoutStyles.logo}`}
-    //               />
-    //               <span className="fw-bold d-none d-xl-block">
-    //                 librarian.io
-    //               </span>
-    //             </div>
-    //           </ListItemButton>
-
-    //           <ListItemButton onClick={handleClick} className="mt-3 ">
-    //             <div className="d-flex align-items-center gap-3">
-    //               {loginUser ? (
-    //                 <>
-    //                   <Avatar alt="Remy Sharp" src={loginUser.avatar} />
-    //                   <div>
-    //                     <span className="fw-bold d-none d-xl-block">
-    //                       {loginUser.name}
-    //                     </span>
-    //                   </div>
-    //                 </>
-    //               ) : (
-    //                 ""
-    //               )}
-    //             </div>
-    //             {open ? (
-    //               <ExpandLess className="ms-xl-auto " />
-    //             ) : (
-    //               <ExpandMore className="ms-xl-auto " />
-    //             )}
-    //           </ListItemButton>
-    //           <Collapse in={open} timeout="auto" unmountOnExit>
-    //             <List
-    //               component="div"
-    //               className="me-0 d-flex gap-2 align-items-center">
-    //               <p
-    //                 className={`m-0 ${layoutStyles.hoverLink} w-50 text-center`}>
-    //                 Edit
-    //               </p>
-    //               <p
-    //                 className={`m-0 ${layoutStyles.hoverLink} w-50 text-center`}
-    //                 onClick={handleClickLogout}>
-    //                 Logout
-    //               </p>
-    //             </List>
-    //           </Collapse>
-    //           <hr />
-
-    //           <ListItemButton className="p-0">
-    //             <NavLink
-    //               to="dashboard"
-    //               className="text-decoration-none w-100 h-100 p-3"
-    //               style={({ isActive }) =>
-    //                 isActive ? activeStyle : noneActiveStyle
-    //               }>
-    //               <div
-    //                 className={` d-flex gap-3 align-items-center w-100 h-100`}>
-    //                 <GridViewOutlinedIcon />
-    //                 <p className="d-none d-xl-block m-0 w-100 ">Dashboard</p>
-    //               </div>
-    //             </NavLink>
-    //           </ListItemButton>
-    //           <ListItemButton className="p-0">
-    //             <NavLink
-    //               to="libraryloan"
-    //               className="text-decoration-none w-100 h-100 p-3"
-    //               style={({ isActive }) =>
-    //                 isActive ? activeStyle : noneActiveStyle
-    //               }>
-    //               <div className={` d-flex gap-3 align-items-center`}>
-    //                 <CachedOutlinedIcon />
-    //                 <p className="d-none d-xl-block m-0 ">Library loan</p>
-    //               </div>
-    //             </NavLink>
-    //           </ListItemButton>
-    //           <ListItemButton className="p-0">
-    //             <NavLink
-    //               to="books"
-    //               className="text-decoration-none w-100 h-100 p-3"
-    //               style={({ isActive }) =>
-    //                 isActive ? activeStyle : noneActiveStyle
-    //               }>
-    //               <div className={` d-flex gap-3 align-items-center`}>
-    //                 <LibraryBooksOutlinedIcon />
-    //                 <p className="d-none d-xl-block m-0 ">Books</p>
-    //               </div>
-    //             </NavLink>
-    //           </ListItemButton>
-
-    //           <ListItemButton className="p-0">
-    //             <NavLink
-    //               to="members"
-    //               className="text-decoration-none w-100 h-100 p-3"
-    //               style={({ isActive }) =>
-    //                 isActive ? activeStyle : noneActiveStyle
-    //               }>
-    //               <div className={` d-flex gap-3 align-items-center`}>
-    //                 <GroupOutlinedIcon />
-    //                 <p className="d-none d-xl-block m-0 ">Members</p>
-    //               </div>
-    //             </NavLink>
-    //           </ListItemButton>
-    //         </List>
-    //       </Col>
-    //       <Col md={7}>
-    //         <Outlet />
-    //       </Col>
-    //       <Col md={3}>c</Col>
-    //     </Row>
-
-    //   </Container>
-    // );
     return (
       <Grid>
+        {/* Header */}
         <Grid
-          className="shadow-sm"
+          className="border-bottom"
           container
           justifyContent="space-between"
           alignItems="center"
@@ -312,12 +191,21 @@ const Layout = () => {
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu>
-                    <Dropdown.Item>Your profile</Dropdown.Item>
-                    <Dropdown.Item onClick={handleOpenChangePassword}>
-                      Change password
+                    <Dropdown.Item className="d-flex align-items-center gap-2">
+                      <EditIcon sx={{ fontSize: "16px" }} />
+                      <p className="m-0">Your profile</p>
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={handleOpenLogout}>
-                      Sign out
+                    <Dropdown.Item
+                      onClick={handleOpenChangePassword}
+                      className="d-flex align-items-center gap-2">
+                      <SyncLockIcon sx={{ fontSize: "16px" }} />
+                      <p className="m-0">Change password</p>
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={handleOpenLogout}
+                      className="d-flex align-items-center gap-2">
+                      <ExitToAppIcon sx={{ fontSize: "16px" }} />
+                      <p className="m-0">Sign out</p>
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
@@ -327,8 +215,60 @@ const Layout = () => {
             )}
           </Box>
         </Grid>
-        <Grid></Grid>
 
+        {/* Menu */}
+        <Grid
+          className="border-bottom"
+          container
+          justifyContent="flex-start"
+          alignItems="center">
+          <NavLink
+            to="dashboard"
+            className="text-decoration-none p-3"
+            style={({ isActive }) =>
+              isActive ? activeStyle : noneActiveStyle
+            }>
+            <div className={` d-flex gap-3 align-items-center w-100 h-100`}>
+              <GridViewOutlinedIcon />
+              <p className="m-0 ">Dashboard</p>
+            </div>
+          </NavLink>
+          <NavLink
+            to="members"
+            className="text-decoration-none p-3"
+            style={({ isActive }) =>
+              isActive ? activeStyle : noneActiveStyle
+            }>
+            <div className={` d-flex gap-3 align-items-center w-100 h-100`}>
+              <GroupOutlinedIcon />
+              <p className="m-0 ">Members</p>
+            </div>
+          </NavLink>
+          <NavLink
+            to="books"
+            className="text-decoration-none p-3"
+            style={({ isActive }) =>
+              isActive ? activeStyle : noneActiveStyle
+            }>
+            <div className={` d-flex gap-3 align-items-center w-100 h-100`}>
+              <LibraryBooksOutlinedIcon />
+              <p className="m-0 ">Books</p>
+            </div>
+          </NavLink>
+          <NavLink
+            to="libraryloan"
+            className="text-decoration-none p-3"
+            style={({ isActive }) =>
+              isActive ? activeStyle : noneActiveStyle
+            }>
+            <div className={` d-flex gap-3 align-items-center w-100 h-100`}>
+              <CachedOutlinedIcon />
+              <p className="m-0 ">Library loan</p>
+            </div>
+          </NavLink>
+        </Grid>
+
+        <Outlet></Outlet>
         {/* Show confirm Sign out */}
         <Dialog
           open={openLogout}

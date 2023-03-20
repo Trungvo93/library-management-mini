@@ -3,10 +3,14 @@ import { fetchUsers } from "../../redux/usersSlice";
 import { useDispatch, useSelector } from "react-redux";
 import membersStyle from "../../css/Member.module.scss";
 import Table from "react-bootstrap/Table";
-import { Box } from "@mui/material";
+import { Box, Pagination } from "@mui/material";
 const Members = () => {
   const dispatch = useDispatch();
   const users = useSelector((state) => state.users);
+  const [page, setPage] = useState(1);
+  const handleChangePage = (event, value) => {
+    setPage(value);
+  };
   useEffect(() => {
     dispatch(fetchUsers());
   }, []);
@@ -74,6 +78,12 @@ const Members = () => {
             : ""}
         </tbody>
       </Table>
+      <Pagination
+        count={10}
+        page={page}
+        onChange={handleChangePage}
+        className="d-flex justify-content-end my-2"
+      />
     </Box>
   );
 };

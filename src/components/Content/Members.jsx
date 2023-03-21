@@ -1,19 +1,52 @@
 import React, { useState, useEffect } from "react";
-import { fetchUsers } from "../../redux/usersSlice";
+import { fetchUserPerPage, deleteUser } from "../../redux/usersSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import membersStyle from "../../css/Member.module.scss";
+import { useCookies } from "react-cookie";
 import Table from "react-bootstrap/Table";
-import { Box, Pagination } from "@mui/material";
+import {
+  Button,
+  Box,
+  Pagination,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 const Members = () => {
   const dispatch = useDispatch();
+  const [cookies] = useCookies();
   const users = useSelector((state) => state.users);
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [indexPage, setIndexPage] = useState(0);
   const handleChangePage = (event, value) => {
     setPage(value);
+    setIndexPage(value * 10 - 10);
+    dispatch(fetchUserPerPage(value));
   };
   useEffect(() => {
-    dispatch(fetchUsers());
+    dispatch(fetchUserPerPage(page));
   }, []);
+  const handleEditUser = (item) => {
+    navigate("/index/profile", { state: item });
+  };
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [idDelete, setIdDelete] = useState();
+  const handleDeleteUser = (item) => {
+    setIdDelete(item.id);
+    setConfirmDelete(true);
+  };
+  const closeDialogDelete = () => {
+    setConfirmDelete(false);
+  };
+  const delUser = () => {
+    setConfirmDelete(false);
+    dispatch(deleteUser(idDelete));
+    handleChangePage("", 1);
+  };
   return (
     <Box className="table-responsive-md">
       <Table striped bordered hover>
@@ -31,9 +64,9 @@ const Members = () => {
         </thead>
         <tbody>
           {users
-            ? users.usersList.map((item, index) => (
+            ? users.userPerPage.map((item, index) => (
                 <tr key={item.id} className="align-middle">
-                  <td>{index + 1}</td>
+                  <td>{indexPage + index + 1}</td>
                   <td>
                     <div className="d-flex align-items-center gap-2">
                       <img
@@ -50,12 +83,12 @@ const Members = () => {
                   <td className="text-capitalize">{item.schoolCode}</td>
                   <td className="text-capitalize">{item.studentCode}</td>
                   <td>
-                    {/* {cookies.role === "admin" ? (
+                    {cookies.role === "admin" ? (
                       <div className="row ">
                         <div className="col-xl-6 col-12 mb-2">
                           <button
                             className="btn btn-warning w-100 "
-                            onClick={() => handleEditUser(e)}>
+                            onClick={() => handleEditUser(item)}>
                             Edit
                           </button>
                         </div>
@@ -63,7 +96,7 @@ const Members = () => {
                           <button
                             className="btn btn-danger w-100"
                             onClick={() => {
-                              handleClickOpen(e);
+                              handleDeleteUser(item);
                             }}>
                             Delete
                           </button>
@@ -71,7 +104,7 @@ const Members = () => {
                       </div>
                     ) : (
                       ""
-                    )} */}
+                    )}
                   </td>
                 </tr>
               ))
@@ -79,11 +112,23 @@ const Members = () => {
         </tbody>
       </Table>
       <Pagination
-        count={10}
+        count={Math.ceil(users.usersList.length / 10)}
         page={page}
         onChange={handleChangePage}
         className="d-flex justify-content-end my-2"
       />
+      <Dialog open={confirmDelete} onClose={closeDialogDelete}>
+        <DialogTitle>Do you want to delete this user?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Confirm please!</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDialogDelete}>Disagree</Button>
+          <Button onClick={delUser} autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

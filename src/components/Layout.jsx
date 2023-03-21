@@ -52,7 +52,7 @@ const Layout = () => {
     errNewPass: true,
     errConfirmPass: true,
   });
-  const [cookies, setCookie] = useCookies();
+  const [cookies, setCookie, removeCookie] = useCookies();
   const [open, setOpen] = useState(false);
   let activeStyle = {
     borderBottom: "2px solid #1c79c0",
@@ -77,6 +77,10 @@ const Layout = () => {
       maxAge: 180,
     });
     setCookie("status", "succeeded", { path: "/", maxAge: 180 });
+    setCookie("role", cookies.role, {
+      path: "/",
+      maxAge: 180,
+    });
   }, [store]);
   const handleGotoHome = () => {
     navigate("/index/dashboard");
@@ -90,6 +94,9 @@ const Layout = () => {
     setOpenLogout(false);
   };
   const navigateLogout = () => {
+    removeCookie("username", { path: "/" });
+    removeCookie("role", { path: "/" });
+    removeCookie("status", { path: "/" });
     navigate("/");
   };
 

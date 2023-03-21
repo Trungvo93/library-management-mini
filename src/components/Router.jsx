@@ -10,6 +10,7 @@ import Dashboard from "./Content/Dashboard";
 import LibraryLoan from "./Content/LibraryLoan";
 import Books from "./Content/Books";
 import Members from "./Content/Members";
+import EditUser from "./Content/EditUser";
 const Router = () => {
   return (
     <Provider store={store}>
@@ -23,6 +24,7 @@ const Router = () => {
               <Route path="libraryloan" element={<LibraryLoan />}></Route>
               <Route path="books" element={<Books />}></Route>
               <Route path="members" element={<Members />}></Route>
+              <Route path="profile" element={<EditUser />}></Route>
             </Route>
           </Routes>
         </BrowserRouter>

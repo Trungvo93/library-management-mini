@@ -43,7 +43,9 @@ const Login = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await axios.get(`https://evon.cksvietnam.vn/users`);
+    const res = await axios.get(
+      `https://637edb84cfdbfd9a63b87c1c.mockapi.io/users`
+    );
     const checkAccount = res.data.find(
       (item) =>
         item.username === formLogin.username &&
@@ -58,7 +60,10 @@ const Login = () => {
       });
 
       setCookie("status", "succeeded", { path: "/", maxAge: 180 });
-
+      setCookie("role", checkAccount.role, {
+        path: "/",
+        maxAge: 180,
+      });
       navigate("/index/dashboard");
     } else {
       handleShowAlert();

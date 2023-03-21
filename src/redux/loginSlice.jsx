@@ -5,7 +5,7 @@ const initialState = {
   current: {},
   status: false,
 };
-const USER_URL = `https://evon.cksvietnam.vn/users`;
+const USER_URL = `https://637edb84cfdbfd9a63b87c1c.mockapi.io/users`;
 export const updatePass = createAsyncThunk(
   "changePassword",
   async (payload) => {

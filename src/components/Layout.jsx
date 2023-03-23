@@ -119,7 +119,7 @@ const Layout = () => {
     e.preventDefault();
 
     const res = await axios.get(
-      `https://evon.cksvietnam.vn/users/${loginUser.id}`
+      `https://637edb84cfdbfd9a63b87c1c.mockapi.io/users/${loginUser.id}`
     );
     dispatch(vertifyLogin(res.data));
 

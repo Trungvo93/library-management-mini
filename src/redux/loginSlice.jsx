@@ -5,12 +5,12 @@ const initialState = {
   current: {},
   status: false,
 };
-const USER_URL = `https://637edb84cfdbfd9a63b87c1c.mockapi.io/users`;
+const USERS_URL = `https://637edb84cfdbfd9a63b87c1c.mockapi.io/users`;
 export const updatePass = createAsyncThunk(
   "changePassword",
   async (payload) => {
     try {
-      const res = await axios.put(`${USER_URL}/${payload.id}`, payload);
+      const res = await axios.put(`${USERS_URL}/${payload.id}`, payload);
       return { ...res.data };
     } catch (error) {
       return error.message;

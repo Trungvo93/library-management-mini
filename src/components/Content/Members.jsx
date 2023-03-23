@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { fetchUserPerPage, deleteUser } from "../../redux/usersSlice";
+import {
+  fetchUserPerPage,
+  deleteUser,
+  usersFindLenght,
+} from "../../redux/usersSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+
 import membersStyle from "../../css/Member.module.scss";
 import { useCookies } from "react-cookie";
 import { Table, Dropdown } from "react-bootstrap";
@@ -17,6 +22,7 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
+import LoadingData from "../LoadingData";
 const Members = () => {
   const dispatch = useDispatch();
   const [cookies] = useCookies();
@@ -24,14 +30,43 @@ const Members = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [indexPage, setIndexPage] = useState(0);
-  const handleChangePage = (event, value) => {
-    setPage(value);
-    setIndexPage(value * 10 - 10);
-    dispatch(fetchUserPerPage(value));
+  const [firstLoading, setFirstLoading] = useState(true);
+  //Filter
+  const [typeFilter, setTypeFilter] = useState("name");
+  const [findItem, setFindItem] = useState("");
+  const handleFilter = (e) => {
+    setFindItem(e.target.value);
   };
   useEffect(() => {
-    dispatch(fetchUserPerPage(page));
-  }, []);
+    const handler = setTimeout(() => {
+      handleChangePage("", 1);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [findItem, typeFilter]);
+  const handleChangePage = (event, value) => {
+    const indexPage = value;
+    setPage(indexPage);
+    setIndexPage(value * 10 - 10);
+    if (findItem === "") {
+      dispatch(fetchUserPerPage({ indexPage: indexPage }));
+    } else {
+      dispatch(
+        fetchUserPerPage({
+          type: typeFilter,
+          value: findItem,
+          indexPage: indexPage,
+        })
+      );
+      dispatch(
+        usersFindLenght({
+          type: typeFilter,
+          value: findItem,
+        })
+      );
+    }
+    setFirstLoading(false);
+  };
+
   const handleEditUser = (item) => {
     navigate("/index/profile", { state: item });
   };
@@ -50,12 +85,6 @@ const Members = () => {
     handleChangePage("", 1);
   };
 
-  //Filter
-  const [typeFilter, setTypeFilter] = useState("name");
-  const [findItem, setFindItem] = useState("");
-  const handleFilter = (e) => {
-    setFindItem(e.target.value);
-  };
   return (
     <Box
       sx={{
@@ -108,88 +137,97 @@ const Members = () => {
           onChange={handleFilter}
         />
       </Grid>
-      <Box className="table-responsive-lg">
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Birthday</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>School Code</th>
-              <th>Student Code</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users
-              ? users.userPerPage.map((item, index) => (
-                  <tr key={item.id} className="align-middle">
-                    <td>{indexPage + index + 1}</td>
-                    <td>
-                      <div className="d-flex align-items-center gap-2">
-                        <img
-                          src={item.avatar}
-                          alt=""
-                          className={`rounded-circle ${membersStyle.avatar}`}
-                        />
-                        <p className="m-0 text-capitalize">{item.name}</p>
-                      </div>
-                    </td>
-                    <td className="text-capitalize">{item.birthday}</td>
-                    <td className="text-capitalize">{item.email}</td>
-                    <td className="text-capitalize">{item.role}</td>
-                    <td className="text-capitalize">{item.schoolCode}</td>
-                    <td className="text-capitalize">{item.studentCode}</td>
-                    <td>
-                      {cookies.role === "admin" ? (
-                        <div className="row ">
-                          <div className="col-xl-6 col-12 mb-2">
-                            <button
-                              className="btn btn-warning w-100 "
-                              onClick={() => handleEditUser(item)}>
-                              Edit
-                            </button>
-                          </div>
-                          <div className="col-xl-6 col-12 mb-2">
-                            <button
-                              className="btn btn-danger w-100"
-                              onClick={() => {
-                                handleDeleteUser(item);
-                              }}>
-                              Delete
-                            </button>
-                          </div>
+      {users.isLoading === true || firstLoading === true ? (
+        <LoadingData />
+      ) : (
+        <Box className="table-responsive-lg">
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Birthday</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>School Code</th>
+                <th>Student Code</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users
+                ? users.userPerPage.map((item, index) => (
+                    <tr key={item.id} className="align-middle">
+                      <td>{indexPage + index + 1}</td>
+                      <td>
+                        <div className="d-flex align-items-center gap-2">
+                          <img
+                            src={item.avatar}
+                            alt=""
+                            className={`rounded-circle ${membersStyle.avatar}`}
+                          />
+                          <p className="m-0 text-capitalize">{item.name}</p>
                         </div>
-                      ) : (
-                        ""
-                      )}
-                    </td>
-                  </tr>
-                ))
-              : ""}
-          </tbody>
-        </Table>
-        <Pagination
-          count={Math.ceil(users.usersList.length / 10)}
-          page={page}
-          onChange={handleChangePage}
-          className="d-flex justify-content-end my-2"
-        />
-        <Dialog open={confirmDelete} onClose={closeDialogDelete}>
-          <DialogTitle>Do you want to delete this user?</DialogTitle>
-          <DialogContent>
-            <DialogContentText>Confirm please!</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={closeDialogDelete}>Disagree</Button>
-            <Button onClick={delUser} autoFocus>
-              Agree
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Box>
+                      </td>
+                      <td className="text-capitalize">{item.birthday}</td>
+                      <td className="text-capitalize">{item.email}</td>
+                      <td className="text-capitalize">{item.role}</td>
+                      <td className="text-capitalize">{item.schoolCode}</td>
+                      <td className="text-capitalize">{item.studentCode}</td>
+                      <td>
+                        {cookies.role === "admin" ? (
+                          <div className="row ">
+                            <div className="col-xl-6 col-12 mb-2">
+                              <button
+                                className="btn btn-warning w-100 "
+                                onClick={() => handleEditUser(item)}>
+                                Edit
+                              </button>
+                            </div>
+                            <div className="col-xl-6 col-12 mb-2">
+                              <button
+                                className="btn btn-danger w-100"
+                                onClick={() => {
+                                  handleDeleteUser(item);
+                                }}>
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          ""
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                : ""}
+            </tbody>
+          </Table>
+          <Pagination
+            count={
+              findItem === ""
+                ? Math.ceil(users.usersList.length / 10)
+                : Math.ceil(users.usersFindLenght.length / 10)
+            }
+            // count={Math.ceil(users.usersList.length / 10)}
+            page={page}
+            onChange={handleChangePage}
+            className="d-flex justify-content-end my-2"
+          />
+          <Dialog open={confirmDelete} onClose={closeDialogDelete}>
+            <DialogTitle>Do you want to delete this user?</DialogTitle>
+            <DialogContent>
+              <DialogContentText>Confirm please!</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={closeDialogDelete}>Disagree</Button>
+              <Button onClick={delUser} autoFocus>
+                Agree
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Box>
+      )}
     </Box>
   );
 };

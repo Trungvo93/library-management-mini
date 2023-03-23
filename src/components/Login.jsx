@@ -43,9 +43,7 @@ const Login = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await axios.get(
-      `https://637edb84cfdbfd9a63b87c1c.mockapi.io/users`
-    );
+    const res = await axios.get(`https://evon.cksvietnam.vn/users`);
     const checkAccount = res.data.find(
       (item) =>
         item.username === formLogin.username &&

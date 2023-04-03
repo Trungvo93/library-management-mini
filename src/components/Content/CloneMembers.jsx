@@ -28,7 +28,6 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import LoadingData from "../LoadingData";
-import EditUser from "./EditUser";
 const Members = () => {
   const dispatch = useDispatch();
   const [cookies] = useCookies();
@@ -73,7 +72,6 @@ const Members = () => {
     setFirstLoading(false);
   };
 
-  //Edit user
   const [confirmEdit, setConfirmEdit] = useState(false);
   const [profileEdit, setProfileEdit] = useState({});
   const closeDialogEdit = () => {
@@ -81,14 +79,12 @@ const Members = () => {
   };
   const handleEditUser = (item) => {
     setProfileEdit({ ...item });
-    console.log(item);
     setConfirmEdit(true);
   };
   const navigateEditUser = () => {
     navigate("/index/profile", { state: profileEdit });
   };
 
-  //Delete user
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [idDelete, setIdDelete] = useState();
   const handleDeleteUser = (item) => {
@@ -105,7 +101,6 @@ const Members = () => {
     handleChangePage("", 1);
   };
 
-  //Add user
   const [confirmAddUser, setConfirmAddUser] = useState(false);
   const closeDialogAddUser = () => {
     setConfirmAddUser(false);
@@ -121,7 +116,6 @@ const Members = () => {
       sx={{
         paddingX: "16px",
       }}>
-      {/* Search Bar */}
       <Grid container direction="row" gap={1} sx={{ marginY: "16px" }}>
         <Dropdown
           onSelect={(e) => {
@@ -190,8 +184,6 @@ const Members = () => {
           </DialogActions>
         </Dialog>
       </Grid>
-
-      {/* Show table data */}
       {users.isLoading === true || firstLoading === true ? (
         <LoadingData />
       ) : (
@@ -271,19 +263,9 @@ const Members = () => {
             className="d-flex justify-content-end my-2"
           />
           <Dialog open={confirmEdit} onClose={closeDialogEdit}>
-            <DialogTitle>
-              <Grid
-                container
-                direction="row"
-                justifyContent="flex-start"
-                alignItems="center"
-                gap={1}>
-                <EditIcon color="primary" />{" "}
-                <span className="text-primary">Edit User</span>
-              </Grid>
-            </DialogTitle>
+            <DialogTitle>Do you want to edit this user?</DialogTitle>
             <DialogContent>
-              <EditUser profile={profileEdit} />
+              <DialogContentText>Confirm please!</DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={closeDialogEdit}>Disagree</Button>

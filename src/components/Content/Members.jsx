@@ -21,7 +21,12 @@ import {
   DialogTitle,
   Grid,
   TextField,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import LoadingData from "../LoadingData";
 const Members = () => {
   const dispatch = useDispatch();
@@ -67,9 +72,19 @@ const Members = () => {
     setFirstLoading(false);
   };
 
-  const handleEditUser = (item) => {
-    navigate("/index/profile", { state: item });
+  const [confirmEdit, setConfirmEdit] = useState(false);
+  const [profileEdit, setProfileEdit] = useState({});
+  const closeDialogEdit = () => {
+    setConfirmEdit(false);
   };
+  const handleEditUser = (item) => {
+    setProfileEdit({ ...item });
+    setConfirmEdit(true);
+  };
+  const navigateEditUser = () => {
+    navigate("/index/profile", { state: profileEdit });
+  };
+
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [idDelete, setIdDelete] = useState();
   const handleDeleteUser = (item) => {
@@ -82,9 +97,20 @@ const Members = () => {
   const delUser = () => {
     setConfirmDelete(false);
     dispatch(deleteUser(idDelete));
+    setFindItem("");
     handleChangePage("", 1);
   };
 
+  const [confirmAddUser, setConfirmAddUser] = useState(false);
+  const closeDialogAddUser = () => {
+    setConfirmAddUser(false);
+  };
+  const navigateAddUser = () => {
+    navigate("/index/adduser");
+  };
+  const handleAddUser = () => {
+    setConfirmAddUser(true);
+  };
   return (
     <Box
       sx={{
@@ -136,6 +162,27 @@ const Members = () => {
           value={findItem}
           onChange={handleFilter}
         />
+        <Tooltip title="Add User" arrow onClick={handleAddUser}>
+          <IconButton color="primary">
+            <PersonAddIcon />
+          </IconButton>
+        </Tooltip>
+        <Dialog open={confirmAddUser} onClose={closeDialogAddUser}>
+          <DialogTitle>Do you want to add more user</DialogTitle>
+          <DialogContent>
+            <DialogContentText>Confirm please!</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeDialogAddUser}>Disagree</Button>
+            <Button
+              onClick={navigateAddUser}
+              autoFocus
+              variant="outlined"
+              color="error">
+              Agree
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Grid>
       {users.isLoading === true || firstLoading === true ? (
         <LoadingData />
@@ -176,24 +223,26 @@ const Members = () => {
                       <td className="text-capitalize">{item.studentCode}</td>
                       <td>
                         {cookies.role === "admin" ? (
-                          <div className="row ">
-                            <div className="col-xl-6 col-12 mb-2">
-                              <button
-                                className="btn btn-warning w-100 "
-                                onClick={() => handleEditUser(item)}>
-                                Edit
-                              </button>
-                            </div>
-                            <div className="col-xl-6 col-12 mb-2">
-                              <button
-                                className="btn btn-danger w-100"
-                                onClick={() => {
-                                  handleDeleteUser(item);
-                                }}>
-                                Delete
-                              </button>
-                            </div>
-                          </div>
+                          <Box>
+                            <Tooltip
+                              title="Edit User"
+                              arrow
+                              onClick={() => handleEditUser(item)}>
+                              <IconButton color="secondary">
+                                <EditIcon />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip
+                              title="Delete User"
+                              arrow
+                              onClick={() => {
+                                handleDeleteUser(item);
+                              }}>
+                              <IconButton color="error">
+                                <DeleteForeverIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
                         ) : (
                           ""
                         )}
@@ -209,11 +258,27 @@ const Members = () => {
                 ? Math.ceil(users.usersList.length / 10)
                 : Math.ceil(users.usersFindLenght.length / 10)
             }
-            // count={Math.ceil(users.usersList.length / 10)}
             page={page}
             onChange={handleChangePage}
             className="d-flex justify-content-end my-2"
           />
+          <Dialog open={confirmEdit} onClose={closeDialogEdit}>
+            <DialogTitle>Do you want to edit this user?</DialogTitle>
+            <DialogContent>
+              <DialogContentText>Confirm please!</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={closeDialogEdit}>Disagree</Button>
+              <Button
+                onClick={navigateEditUser}
+                autoFocus
+                variant="outlined"
+                color="error">
+                Agree
+              </Button>
+            </DialogActions>
+          </Dialog>
+
           <Dialog open={confirmDelete} onClose={closeDialogDelete}>
             <DialogTitle>Do you want to delete this user?</DialogTitle>
             <DialogContent>
@@ -221,7 +286,11 @@ const Members = () => {
             </DialogContent>
             <DialogActions>
               <Button onClick={closeDialogDelete}>Disagree</Button>
-              <Button onClick={delUser} autoFocus>
+              <Button
+                onClick={delUser}
+                autoFocus
+                variant="outlined"
+                color="error">
                 Agree
               </Button>
             </DialogActions>

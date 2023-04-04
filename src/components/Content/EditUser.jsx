@@ -17,7 +17,7 @@ const EditUser = (props) => {
     //   ),
 
     schoolCode: yup.string().when("role", {
-      is: (val) => val === "student",
+      is: (val) => val?includes("student"),
       then: yup.string().required("asdad"),
       // .matches(
       //   /^[A-Za-z][A-Za-z0-9_]{2,29}$/,

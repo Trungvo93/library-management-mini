@@ -2,50 +2,72 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TextField, Button } from "@mui/material";
+import { TextField, Button, Select, MenuItem } from "@mui/material";
 const EditUser = (props) => {
   const profile = props.profile;
   const schema = yup.object().shape({
-    firstName: yup.string().required("First name is required"),
-    lastName: yup.string().required("Last name is required"),
+    name: yup.string().required("Your name is required"),
     email: yup.string().email("Invalid email").required("Email is required"),
-    password: yup.string().required("Password is required"),
+    role: yup.string().required("Role is required"),
+    // studentCode: yup
+    //   .string()
+    //   .matches(
+    //     /^[A-Za-z][A-Za-z0-9_]{5,29}$/,
+    //     "At least 6 characters, no spaces"
+    //   ),
+
+    schoolCode: yup.string().when("role", {
+      is: (val) => val === "student",
+      then: yup.string().required("asdad"),
+      // .matches(
+      //   /^[A-Za-z][A-Za-z0-9_]{2,29}$/,
+      //   "At least 3 characters, no spaces"
+      // ),
+      otherwise: yup.string(),
+    }),
+
+    // schoolCode: yup
+    //   .string()
+    //   .matches(
+    //     /^[A-Za-z][A-Za-z0-9_]{5,29}$/,
+    //     "At least 6 characters, no spaces"
+    //   ),
+    birthday: yup.date().required(),
   });
-  const [submitting, setSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
+    watch,
+
     formState: { errors },
   } = useForm({
-    defaultValues: profile,
+    defaultValues: { ...profile },
     resolver: yupResolver(schema),
   });
-
-  const onSubmit = async (data) => {
-    setSubmitting(true);
+  const watchRole = watch("role");
+  const onSubmit = (data) => {
     console.log(data);
-    setSubmitting(false);
   };
+
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
-          label="First name"
+          label="Name"
           variant="outlined"
           fullWidth
           margin="dense"
-          {...register("firstName")}
-          error={!!errors.firstName}
-          helperText={errors.firstName?.message}
+          {...register("name")}
+          error={!!errors.name}
+          helperText={errors.name?.message}
         />
         <TextField
-          label="Last name"
+          disabled
+          label="Username"
           variant="outlined"
           fullWidth
           margin="dense"
-          {...register("lastName")}
-          error={!!errors.lastName}
-          helperText={errors.lastName?.message}
+          {...register("username")}
         />
         <TextField
           label="Email"
@@ -57,17 +79,48 @@ const EditUser = (props) => {
           helperText={errors.email?.message}
         />
         <TextField
-          type="password"
-          label="Password"
+          type="date"
+          label="Birthday"
           variant="outlined"
           fullWidth
           margin="dense"
-          {...register("password")}
-          error={!!errors.password}
-          helperText={errors.password?.message}
+          {...register("birthday")}
+          error={!!errors.birthday}
+          helperText={errors.birthday?.message}
         />
-        <Button type="submit" variant="contained" disabled={submitting}>
-          Submit
+        <TextField
+          select
+          label="Role"
+          variant="outlined"
+          fullWidth
+          margin="dense"
+          defaultValue={profile.role}
+          {...register("role")}
+          error={!!errors.role}
+          helperText={errors.role?.message}>
+          <MenuItem value="admin">Admin</MenuItem>
+          <MenuItem value="librarian">Librarian</MenuItem>
+          <MenuItem value="student">Student</MenuItem>
+        </TextField>
+        {watchRole === "student" ? (
+          <TextField
+            label="School Code"
+            variant="outlined"
+            fullWidth
+            margin="dense"
+            {...register("schoolCode")}
+            error={!!errors.schoolCode}
+            helperText={errors.schoolCode?.message}
+          />
+        ) : (
+          ""
+        )}
+        <Button
+          variant="contained"
+          type="submit"
+          fullWidth
+          sx={{ marginTop: "16px" }}>
+          Save
         </Button>
       </form>
     </div>

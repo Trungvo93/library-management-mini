@@ -27,6 +27,7 @@ import {
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import CloseIcon from "@mui/icons-material/Close";
 import LoadingData from "../LoadingData";
 import EditUser from "./EditUser";
 const Members = () => {
@@ -81,11 +82,11 @@ const Members = () => {
   };
   const handleEditUser = (item) => {
     setProfileEdit({ ...item });
-    console.log(item);
     setConfirmEdit(true);
+    console.log(item);
   };
   const navigateEditUser = () => {
-    navigate("/index/profile", { state: profileEdit });
+    // navigate("/index/profile", { state: profileEdit });
   };
 
   //Delete user
@@ -270,33 +271,38 @@ const Members = () => {
             onChange={handleChangePage}
             className="d-flex justify-content-end my-2"
           />
-          <Dialog open={confirmEdit} onClose={closeDialogEdit}>
+
+          {/* Edit form */}
+          <Dialog open={confirmEdit}>
             <DialogTitle>
               <Grid
                 container
                 direction="row"
-                justifyContent="flex-start"
+                justifyContent="space-between"
                 alignItems="center"
                 gap={1}>
-                <EditIcon color="primary" />{" "}
-                <span className="text-primary">Edit User</span>
+                <EditIcon color="primary" />
+                <IconButton onClick={closeDialogEdit}>
+                  <CloseIcon />
+                </IconButton>
               </Grid>
             </DialogTitle>
-            <DialogContent>
+            <DialogContent dividers>
               <EditUser profile={profileEdit} />
             </DialogContent>
             <DialogActions>
-              <Button onClick={closeDialogEdit}>Disagree</Button>
+              {/* <Button onClick={closeDialogEdit}>Cancel</Button>
               <Button
                 onClick={navigateEditUser}
                 autoFocus
                 variant="outlined"
                 color="error">
-                Agree
-              </Button>
+                Save
+              </Button> */}
             </DialogActions>
           </Dialog>
 
+          {/* Delete form */}
           <Dialog open={confirmDelete} onClose={closeDialogDelete}>
             <DialogTitle>Do you want to delete this user?</DialogTitle>
             <DialogContent>

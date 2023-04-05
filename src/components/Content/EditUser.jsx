@@ -2,43 +2,40 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TextField, Button, Select, MenuItem } from "@mui/material";
+import { TextField, Button, MenuItem, Avatar } from "@mui/material";
 const EditUser = (props) => {
   const profile = props.profile;
   const schema = yup.object().shape({
     name: yup.string().required("Your name is required"),
     email: yup.string().email("Invalid email").required("Email is required"),
     role: yup.string().required("Role is required"),
-    // studentCode: yup
-    //   .string()
-    //   .matches(
-    //     /^[A-Za-z][A-Za-z0-9_]{5,29}$/,
-    //     "At least 6 characters, no spaces"
-    //   ),
-
+    studentCode: yup.string().when("role", {
+      is: "student",
+      then: () =>
+        yup
+          .string()
+          .matches(
+            /^[A-Za-z][A-Za-z0-9_]{5,29}$/,
+            "At least 6 characters, no spaces"
+          ),
+    }),
     schoolCode: yup.string().when("role", {
-      is: (val) => val?.includes("student"),
-      then: yup.string().required("asdad"),
-      // .matches(
-      //   /^[A-Za-z][A-Za-z0-9_]{2,29}$/,
-      //   "At least 3 characters, no spaces"
-      // ),
-      otherwise: yup.string(),
+      is: "student",
+      then: () =>
+        yup
+          .string()
+          .matches(
+            /^[A-Za-z][A-Za-z0-9_]{2,29}$/,
+            "At least 3 characters, no spaces"
+          ),
     }),
 
-    // schoolCode: yup
-    //   .string()
-    //   .matches(
-    //     /^[A-Za-z][A-Za-z0-9_]{5,29}$/,
-    //     "At least 6 characters, no spaces"
-    //   ),
     birthday: yup.date().required(),
   });
   const {
     register,
     handleSubmit,
     watch,
-
     formState: { errors },
   } = useForm({
     defaultValues: { ...profile },
@@ -52,6 +49,12 @@ const EditUser = (props) => {
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
+        <Avatar
+          alt="avatar"
+          src={profile.avatar}
+          sx={{ width: 48, height: 48, marginBottom: "16px" }}
+          {...register("avatar")}
+        />
         <TextField
           label="Name"
           variant="outlined"
@@ -103,18 +106,30 @@ const EditUser = (props) => {
           <MenuItem value="student">Student</MenuItem>
         </TextField>
         {watchRole === "student" ? (
-          <TextField
-            label="School Code"
-            variant="outlined"
-            fullWidth
-            margin="dense"
-            {...register("schoolCode")}
-            error={!!errors.schoolCode}
-            helperText={errors.schoolCode?.message}
-          />
+          <>
+            <TextField
+              label="Student Code"
+              variant="outlined"
+              fullWidth
+              margin="dense"
+              {...register("studentCode")}
+              error={!!errors.studentCode}
+              helperText={errors.studentCode?.message}
+            />
+            <TextField
+              label="School Code"
+              variant="outlined"
+              fullWidth
+              margin="dense"
+              {...register("schoolCode")}
+              error={!!errors.schoolCode}
+              helperText={errors.schoolCode?.message}
+            />
+          </>
         ) : (
           ""
         )}
+
         <Button
           variant="contained"
           type="submit"

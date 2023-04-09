@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TextField, Button, MenuItem, Avatar } from "@mui/material";
+import { TextField, Button, MenuItem, Avatar, Box, Grid } from "@mui/material";
 const EditUser = (props) => {
   const profile = props.profile;
   const schema = yup.object().shape({
@@ -32,6 +32,8 @@ const EditUser = (props) => {
 
     birthday: yup.date().required(),
   });
+
+  //initialize react form hook
   const {
     register,
     handleSubmit,
@@ -46,15 +48,52 @@ const EditUser = (props) => {
     console.log(data);
   };
 
+  //Upload Image to Firebase
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const handleChangeFile = (e) => {
+    const imageURL = URL.createObjectURL(e.target.files[0]);
+    setImageFile(e.target.files[0]);
+    setImagePreview(URL.createObjectURL(e.target.files[0]));
+  };
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Avatar
-          alt="avatar"
-          src={profile.avatar}
-          sx={{ width: 48, height: 48, marginBottom: "16px" }}
-          {...register("avatar")}
-        />
+        <Grid
+          container
+          direction="row"
+          justifyContent="flex-start"
+          alignItems="center"
+          sx={{ marginBottom: "16px" }}
+          gap={2}>
+          {imagePreview === null ? (
+            <Avatar
+              alt="avatar"
+              src={profile.avatar}
+              sx={{ width: 48, height: 48 }}
+              {...register("avatar")}
+            />
+          ) : (
+            <Avatar
+              alt="avatar"
+              src={imagePreview}
+              sx={{ width: 48, height: 48 }}
+              {...register("avatar")}
+            />
+          )}
+
+          <Button variant="outlined" component="label" color="secondary">
+            Change Avatar
+            <input
+              hidden
+              accept="image/*"
+              multiple
+              type="file"
+              onChange={handleChangeFile}
+            />
+          </Button>
+        </Grid>
+
         <TextField
           label="Name"
           variant="outlined"

@@ -11,6 +11,7 @@ import membersStyle from "../../css/Member.module.scss";
 import { useCookies } from "react-cookie";
 import { Table, Dropdown } from "react-bootstrap";
 import {
+  Avatar,
   Button,
   Box,
   Pagination,
@@ -23,6 +24,8 @@ import {
   TextField,
   Tooltip,
   IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import EditIcon from "@mui/icons-material/Edit";
@@ -79,14 +82,11 @@ const Members = () => {
   const [profileEdit, setProfileEdit] = useState({});
   const closeDialogEdit = () => {
     setConfirmEdit(false);
+    handleChangePage("", page);
   };
   const handleEditUser = (item) => {
     setProfileEdit({ ...item });
     setConfirmEdit(true);
-    console.log(item);
-  };
-  const navigateEditUser = () => {
-    // navigate("/index/profile", { state: profileEdit });
   };
 
   //Delete user
@@ -102,10 +102,20 @@ const Members = () => {
   const delUser = () => {
     setConfirmDelete(false);
     dispatch(deleteUser(idDelete));
+    setOpenAlertDelete(true);
     setFindItem("");
     handleChangePage("", 1);
   };
 
+  //Show alert delete success message
+  const [openAlertDelete, setOpenAlertDelete] = useState(false);
+  const handleCloseAlertDelete = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenAlertDelete(false);
+  };
   //Add user
   const [confirmAddUser, setConfirmAddUser] = useState(false);
   const closeDialogAddUser = () => {
@@ -217,11 +227,7 @@ const Members = () => {
                       <td>{indexPage + index + 1}</td>
                       <td>
                         <div className="d-flex align-items-center gap-2">
-                          <img
-                            src={item.avatar}
-                            alt=""
-                            className={`rounded-circle ${membersStyle.avatar}`}
-                          />
+                          <Avatar src={item.avatar} alt="" />
                           <p className="m-0 text-capitalize">{item.name}</p>
                         </div>
                       </td>
@@ -290,16 +296,6 @@ const Members = () => {
             <DialogContent dividers>
               <EditUser profile={profileEdit} />
             </DialogContent>
-            <DialogActions>
-              {/* <Button onClick={closeDialogEdit}>Cancel</Button>
-              <Button
-                onClick={navigateEditUser}
-                autoFocus
-                variant="outlined"
-                color="error">
-                Save
-              </Button> */}
-            </DialogActions>
           </Dialog>
 
           {/* Delete form */}
@@ -319,6 +315,18 @@ const Members = () => {
               </Button>
             </DialogActions>
           </Dialog>
+          {/* Show alert delete success message */}
+          <Snackbar
+            open={openAlertDelete}
+            autoHideDuration={3000}
+            onClose={handleCloseAlertDelete}>
+            <Alert
+              onClose={handleCloseAlertDelete}
+              severity="success"
+              sx={{ width: "100%" }}>
+              Delete User success!
+            </Alert>
+          </Snackbar>
         </Box>
       )}
     </Box>

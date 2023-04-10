@@ -2,9 +2,16 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TextField, Button, MenuItem, Avatar, Box, Grid } from "@mui/material";
+import { TextField, Button, MenuItem, Avatar, Grid } from "@mui/material";
+import { storage } from "../../firebase/firebaseConfig";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { v4 } from "uuid";
+import { useDispatch } from "react-redux";
+import { editUser } from "../../redux/usersSlice";
+import { Snackbar, Alert } from "@mui/material";
 const EditUser = (props) => {
   const profile = props.profile;
+  const dispatch = useDispatch();
   const schema = yup.object().shape({
     name: yup.string().required("Your name is required"),
     email: yup.string().email("Invalid email").required("Email is required"),
@@ -44,17 +51,69 @@ const EditUser = (props) => {
     resolver: yupResolver(schema),
   });
   const watchRole = watch("role");
-  const onSubmit = (data) => {
-    console.log(data);
-  };
-
   //Upload Image to Firebase
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [progresspercent, setProgresspercent] = useState(0);
   const handleChangeFile = (e) => {
-    const imageURL = URL.createObjectURL(e.target.files[0]);
     setImageFile(e.target.files[0]);
     setImagePreview(URL.createObjectURL(e.target.files[0]));
+  };
+  const onSubmit = (data) => {
+    if (data.role === "admin" || data.role === "librarian") {
+      data.schoolCode = "";
+      data.studentCode = "";
+    }
+    if (imageFile !== null) {
+      const storageRef = ref(storage, `/library/${v4() + imageFile.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, imageFile);
+      uploadTask.on(
+        "state_changed",
+
+        //Show progress uploading
+        (snapshot) => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setProgresspercent(progress);
+        },
+        //Show Error uploading
+        (error) => {
+          console.log(error);
+        },
+
+        //Get link after upload complete
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            data.avatar = url;
+          });
+        }
+      );
+    }
+    const convertBirthday = new Date(data.birthday);
+    const year = convertBirthday.getFullYear();
+    let month = convertBirthday.getMonth() + 1;
+    if (month < 10) {
+      month = "0" + month.toString();
+    }
+    let date = convertBirthday.getDate();
+    if (date < 10) {
+      date = "0" + date.toString();
+    }
+    data.birthday = year + "-" + month + "-" + date;
+    console.log(data);
+    dispatch(editUser(data));
+    setOpen(true);
+  };
+
+  //Alert success message
+  const [open, setOpen] = useState(false);
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
   };
   return (
     <div>
@@ -147,15 +206,6 @@ const EditUser = (props) => {
         {watchRole === "student" ? (
           <>
             <TextField
-              label="Student Code"
-              variant="outlined"
-              fullWidth
-              margin="dense"
-              {...register("studentCode")}
-              error={!!errors.studentCode}
-              helperText={errors.studentCode?.message}
-            />
-            <TextField
               label="School Code"
               variant="outlined"
               fullWidth
@@ -163,6 +213,15 @@ const EditUser = (props) => {
               {...register("schoolCode")}
               error={!!errors.schoolCode}
               helperText={errors.schoolCode?.message}
+            />
+            <TextField
+              label="Student Code"
+              variant="outlined"
+              fullWidth
+              margin="dense"
+              {...register("studentCode")}
+              error={!!errors.studentCode}
+              helperText={errors.studentCode?.message}
             />
           </>
         ) : (
@@ -177,6 +236,11 @@ const EditUser = (props) => {
           Save
         </Button>
       </form>
+      <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          Save success!
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

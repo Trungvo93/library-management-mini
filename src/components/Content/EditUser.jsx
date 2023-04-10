@@ -59,10 +59,12 @@ const EditUser = (props) => {
     setImageFile(e.target.files[0]);
     setImagePreview(URL.createObjectURL(e.target.files[0]));
   };
+
   const onSubmit = (data) => {
-    if (data.role === "admin" || data.role === "librarian") {
-      data.schoolCode = "";
-      data.studentCode = "";
+    const formData = { ...data };
+    if (formData.role === "admin" || formData.role === "librarian") {
+      formData.schoolCode = "";
+      formData.studentCode = "";
     }
     if (imageFile !== null) {
       const storageRef = ref(storage, `/library/${v4() + imageFile.name}`);
@@ -85,12 +87,12 @@ const EditUser = (props) => {
         //Get link after upload complete
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            data.avatar = url;
+            formData.avatar = url;
           });
         }
       );
     }
-    const convertBirthday = new Date(data.birthday);
+    const convertBirthday = new Date(formData.birthday);
     const year = convertBirthday.getFullYear();
     let month = convertBirthday.getMonth() + 1;
     if (month < 10) {
@@ -100,9 +102,10 @@ const EditUser = (props) => {
     if (date < 10) {
       date = "0" + date.toString();
     }
-    data.birthday = year + "-" + month + "-" + date;
-    console.log(data);
-    dispatch(editUser(data));
+    formData.birthday = year + "-" + month + "-" + date;
+
+    console.log("Formdata:", formData);
+    dispatch(editUser(formData));
     setOpen(true);
   };
 

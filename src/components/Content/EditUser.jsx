@@ -61,11 +61,21 @@ const EditUser = (props) => {
   };
 
   const onSubmit = (data) => {
-    const formData = { ...data };
-    if (formData.role === "admin" || formData.role === "librarian") {
-      formData.schoolCode = "";
-      formData.studentCode = "";
+    if (data.role === "admin" || data.role === "librarian") {
+      data.schoolCode = "";
+      data.studentCode = "";
     }
+    const convertBirthday = new Date(data.birthday);
+    const year = convertBirthday.getFullYear();
+    let month = convertBirthday.getMonth() + 1;
+    if (month < 10) {
+      month = "0" + month.toString();
+    }
+    let date = convertBirthday.getDate();
+    if (date < 10) {
+      date = "0" + date.toString();
+    }
+    data.birthday = year + "-" + month + "-" + date;
     if (imageFile !== null) {
       const storageRef = ref(storage, `/library/${v4() + imageFile.name}`);
       const uploadTask = uploadBytesResumable(storageRef, imageFile);
@@ -87,25 +97,14 @@ const EditUser = (props) => {
         //Get link after upload complete
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            formData.avatar = url;
+            data.avatar = url;
+            dispatch(editUser(data));
           });
         }
       );
+    } else {
+      dispatch(editUser(data));
     }
-    const convertBirthday = new Date(formData.birthday);
-    const year = convertBirthday.getFullYear();
-    let month = convertBirthday.getMonth() + 1;
-    if (month < 10) {
-      month = "0" + month.toString();
-    }
-    let date = convertBirthday.getDate();
-    if (date < 10) {
-      date = "0" + date.toString();
-    }
-    formData.birthday = year + "-" + month + "-" + date;
-
-    console.log("Formdata:", formData);
-    dispatch(editUser(formData));
     setOpen(true);
   };
 

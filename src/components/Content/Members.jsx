@@ -33,6 +33,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import CloseIcon from "@mui/icons-material/Close";
 import LoadingData from "../LoadingData";
 import EditUser from "./EditUser";
+import AddUser from "./AddUser";
 const Members = () => {
   const dispatch = useDispatch();
   const [cookies] = useCookies();
@@ -120,10 +121,9 @@ const Members = () => {
   const [confirmAddUser, setConfirmAddUser] = useState(false);
   const closeDialogAddUser = () => {
     setConfirmAddUser(false);
+    handleChangePage("", page);
   };
-  const navigateAddUser = () => {
-    navigate("/index/adduser");
-  };
+
   const handleAddUser = () => {
     setConfirmAddUser(true);
   };
@@ -184,22 +184,6 @@ const Members = () => {
             <PersonAddIcon />
           </IconButton>
         </Tooltip>
-        <Dialog open={confirmAddUser} onClose={closeDialogAddUser}>
-          <DialogTitle>Do you want to add more user</DialogTitle>
-          <DialogContent>
-            <DialogContentText>Confirm please!</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={closeDialogAddUser}>Disagree</Button>
-            <Button
-              onClick={navigateAddUser}
-              autoFocus
-              variant="outlined"
-              color="error">
-              Agree
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Grid>
 
       {/* Show table data */}
@@ -278,6 +262,26 @@ const Members = () => {
             className="d-flex justify-content-end my-2"
           />
 
+          {/* Add form */}
+          <Dialog open={confirmAddUser}>
+            <DialogTitle>
+              <Grid
+                container
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                gap={1}>
+                <PersonAddIcon color="primary" />
+                <IconButton onClick={closeDialogAddUser}>
+                  <CloseIcon />
+                </IconButton>
+              </Grid>
+            </DialogTitle>
+            <DialogContent dividers>
+              <AddUser />
+            </DialogContent>
+          </Dialog>
+
           {/* Edit form */}
           <Dialog open={confirmEdit}>
             <DialogTitle>
@@ -319,7 +323,8 @@ const Members = () => {
           <Snackbar
             open={openAlertDelete}
             autoHideDuration={3000}
-            onClose={handleCloseAlertDelete}>
+            onClose={handleCloseAlertDelete}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}>
             <Alert
               onClose={handleCloseAlertDelete}
               severity="success"

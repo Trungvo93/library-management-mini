@@ -238,7 +238,11 @@ const EditUser = (props) => {
           Save
         </Button>
       </form>
-      <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}>
         <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
           Save success!
         </Alert>

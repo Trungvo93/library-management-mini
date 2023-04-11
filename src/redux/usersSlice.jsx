@@ -52,6 +52,14 @@ export const usersFindLenght = createAsyncThunk(
   }
 );
 
+export const addUser = createAsyncThunk("users/addUser", async (payload) => {
+  try {
+    await axios.post(`${USERS_URL}`, { ...payload });
+  } catch (error) {
+    return error.message;
+  }
+});
+
 export const editUser = createAsyncThunk("users/editUser", async (payload) => {
   try {
     await axios.put(`${USERS_URL}/${payload.id}`, { ...payload });

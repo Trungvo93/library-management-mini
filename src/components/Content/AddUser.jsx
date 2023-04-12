@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -9,7 +10,6 @@ import { v4 } from "uuid";
 import { useDispatch } from "react-redux";
 import { addUser } from "../../redux/usersSlice";
 import { Snackbar, Alert } from "@mui/material";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 const AddUser = () => {
   const dispatch = useDispatch();
   const schema = yup.object().shape({
@@ -21,6 +21,24 @@ const AddUser = () => {
         /^[A-Za-z][A-Za-z0-9_]{4,29}$/,
         "At least 4 characters, no spaces"
       ),
+    // password: yup
+    //   .string()
+    //   .required("Your password is required")
+    //   .matches(
+    //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
+    //     "At least one digit, at least one lowercase character, at least one uppercase character, at least one special character, at least 6 characters in length, but no more than 32. "
+    //   ),
+    password: yup.string().when("role", {
+      is: "admin" || "librarian",
+      then: () =>
+        yup
+          .string()
+          .required("Your password is required")
+          .matches(
+            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
+            "At least one digit, at least one lowercase character, at least one uppercase character, at least one special character, at least 6 characters in length, but no more than 32. "
+          ),
+    }),
     email: yup.string().email("Invalid email").required("Email is required"),
     role: yup.string().required("Role is required"),
     studentCode: yup.string().when("role", {
@@ -58,9 +76,10 @@ const AddUser = () => {
     defaultValues: {
       name: "",
       avatar: "",
-      role: "",
+      role: "admin",
       username: "",
       password: "",
+      repassword: "",
       email: "",
       birthday: "2010-01-01",
       schoolCode: "",
@@ -68,6 +87,8 @@ const AddUser = () => {
     },
     resolver: yupResolver(schema),
   });
+  const watchPassword = watch("password");
+  const watchRePassword = watch("repassword");
   const watchRole = watch("role");
   //Upload Image to Firebase
   const [imageFile, setImageFile] = useState(null);
@@ -77,55 +98,70 @@ const AddUser = () => {
     setImageFile(e.target.files[0]);
     setImagePreview(URL.createObjectURL(e.target.files[0]));
   };
-
-  const onSubmit = (data) => {
-    if (data.role === "admin" || data.role === "librarian") {
-      data.schoolCode = "";
-      data.studentCode = "";
-    }
-    const convertBirthday = new Date(data.birthday);
-    const year = convertBirthday.getFullYear();
-    let month = convertBirthday.getMonth() + 1;
-    if (month < 10) {
-      month = "0" + month.toString();
-    }
-    let date = convertBirthday.getDate();
-    if (date < 10) {
-      date = "0" + date.toString();
-    }
-    data.birthday = year + "-" + month + "-" + date;
-    if (imageFile !== null) {
-      const storageRef = ref(storage, `/library/${v4() + imageFile.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, imageFile);
-      uploadTask.on(
-        "state_changed",
-
-        //Show progress uploading
-        (snapshot) => {
-          const progress = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          );
-          setProgresspercent(progress);
-        },
-        //Show Error uploading
-        (error) => {
-          console.log(error);
-        },
-
-        //Get link after upload complete
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            data.avatar = url;
-            dispatch(addUser(data));
-          });
-        }
+  const [userExist, setUserExist] = useState(-1);
+  //Submit data
+  const onSubmit = async (data) => {
+    if (data.password === data.repassword) {
+      delete data.repassword;
+      const checkUser = await axios.get(
+        `https://637edb84cfdbfd9a63b87c1c.mockapi.io/users?username=${data.username}`
       );
-    } else {
-      dispatch(addUser(data));
+      const existed = checkUser.data.findIndex(
+        (e) => e.username.toLowerCase() === data.username.toLowerCase()
+      );
+      setUserExist(existed);
+      if (existed === -1) {
+        if (data.role === "admin" || data.role === "librarian") {
+          data.schoolCode = "";
+          data.studentCode = "";
+        } else {
+          data.password = "";
+        }
+        const convertBirthday = new Date(data.birthday);
+        const year = convertBirthday.getFullYear();
+        let month = convertBirthday.getMonth() + 1;
+        if (month < 10) {
+          month = "0" + month.toString();
+        }
+        let date = convertBirthday.getDate();
+        if (date < 10) {
+          date = "0" + date.toString();
+        }
+        data.birthday = year + "-" + month + "-" + date;
+        if (imageFile !== null) {
+          const storageRef = ref(storage, `/library/${v4() + imageFile.name}`);
+          const uploadTask = uploadBytesResumable(storageRef, imageFile);
+          uploadTask.on(
+            "state_changed",
+
+            //Show progress uploading
+            (snapshot) => {
+              const progress = Math.round(
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+              );
+              setProgresspercent(progress);
+            },
+            //Show Error uploading
+            (error) => {
+              console.log(error);
+            },
+
+            //Get link after upload complete
+            () => {
+              getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                data.avatar = url;
+                dispatch(addUser(data));
+              });
+            }
+          );
+        } else {
+          dispatch(addUser(data));
+        }
+        setUserExist(-1);
+        reset();
+      }
+      setOpen(true);
     }
-    console.log("Form data:", data);
-    setOpen(true);
-    reset();
   };
 
   //Alert success message
@@ -184,6 +220,41 @@ const AddUser = () => {
           error={!!errors.username}
           helperText={errors.username?.message}
         />
+        {watchRole !== "student" ? (
+          <>
+            <TextField
+              type="password"
+              label="Password"
+              variant="outlined"
+              fullWidth
+              margin="dense"
+              {...register("password")}
+              error={!!errors.password}
+              helperText={errors.password?.message}
+            />
+            <TextField
+              type="password"
+              label="Re-password"
+              variant="outlined"
+              fullWidth
+              margin="dense"
+              {...register("repassword")}
+              error={
+                watchPassword !== watchRePassword && watchRole !== "student"
+                  ? true
+                  : false
+              }
+              helperText={
+                watchPassword !== watchRePassword && watchRole !== "student"
+                  ? "Password incorrect"
+                  : ""
+              }
+            />
+          </>
+        ) : (
+          ""
+        )}
+
         <TextField
           label="Email"
           variant="outlined"
@@ -255,8 +326,13 @@ const AddUser = () => {
         autoHideDuration={3000}
         onClose={handleClose}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}>
-        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
-          Create User success!
+        <Alert
+          onClose={handleClose}
+          severity={userExist === -1 ? "success" : "error"}
+          sx={{ width: "100%" }}>
+          {userExist === -1
+            ? "Create User success!"
+            : "Username already exists"}
         </Alert>
       </Snackbar>
     </Box>

@@ -27,7 +27,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import CloseIcon from "@mui/icons-material/Close";
@@ -184,7 +184,7 @@ const Books = () => {
         />
         <Tooltip title="Add Book" arrow onClick={handleAddBook}>
           <IconButton color="primary">
-            <PersonAddIcon />
+            <LibraryAddIcon />
           </IconButton>
         </Tooltip>
       </Grid>
@@ -273,7 +273,7 @@ const Books = () => {
                 justifyContent="space-between"
                 alignItems="center"
                 gap={1}>
-                <PersonAddIcon color="primary" />
+                <LibraryAddIcon color="primary" />
                 <IconButton onClick={closeDialogAddBook}>
                   <CloseIcon />
                 </IconButton>

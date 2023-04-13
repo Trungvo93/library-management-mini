@@ -21,13 +21,6 @@ const AddUser = () => {
         /^[A-Za-z][A-Za-z0-9_]{4,29}$/,
         "At least 4 characters, no spaces"
       ),
-    // password: yup
-    //   .string()
-    //   .required("Your password is required")
-    //   .matches(
-    //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/,
-    //     "At least one digit, at least one lowercase character, at least one uppercase character, at least one special character, at least 6 characters in length, but no more than 32. "
-    //   ),
     password: yup.string().when("role", {
       is: "admin" || "librarian",
       then: () =>
@@ -158,6 +151,9 @@ const AddUser = () => {
           dispatch(addUser(data));
         }
         setUserExist(-1);
+        URL.revokeObjectURL(imagePreview);
+        setImageFile("");
+        setImagePreview("");
         reset();
       }
       setOpen(true);

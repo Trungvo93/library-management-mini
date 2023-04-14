@@ -190,67 +190,69 @@ const Members = () => {
       {users.isLoading === true || firstLoading === true ? (
         <LoadingData />
       ) : (
-        <Box className="table-responsive-lg">
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Birthday</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>School Code</th>
-                <th>Student Code</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users
-                ? users.userPerPage.map((item, index) => (
-                    <tr key={item.id} className="align-middle">
-                      <td>{indexPage + index + 1}</td>
-                      <td>
-                        <div className="d-flex align-items-center gap-2">
-                          <Avatar src={item.avatar} alt="" />
-                          <p className="m-0 text-capitalize">{item.name}</p>
-                        </div>
-                      </td>
-                      <td className="text-capitalize">{item.birthday}</td>
-                      <td className="text-capitalize">{item.email}</td>
-                      <td className="text-capitalize">{item.role}</td>
-                      <td className="text-capitalize">{item.schoolCode}</td>
-                      <td className="text-capitalize">{item.studentCode}</td>
-                      <td>
-                        {cookies.role === "admin" ? (
-                          <Box>
-                            <Tooltip
-                              title="Edit User"
-                              arrow
-                              onClick={() => handleEditUser(item)}>
-                              <IconButton color="secondary">
-                                <EditIcon />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip
-                              title="Delete User"
-                              arrow
-                              onClick={() => {
-                                handleDeleteUser(item);
-                              }}>
-                              <IconButton color="error">
-                                <DeleteForeverIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </Box>
-                        ) : (
-                          ""
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                : ""}
-            </tbody>
-          </Table>
+        <Box>
+          <Box className="table-responsive-lg">
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Birthday</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>School Code</th>
+                  <th>Student Code</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users
+                  ? users.userPerPage.map((item, index) => (
+                      <tr key={item.id} className="align-middle">
+                        <td>{indexPage + index + 1}</td>
+                        <td>
+                          <div className="d-flex align-items-center gap-2">
+                            <Avatar src={item.avatar} alt="" />
+                            <p className="m-0 text-capitalize">{item.name}</p>
+                          </div>
+                        </td>
+                        <td className="text-capitalize">{item.birthday}</td>
+                        <td className="text-capitalize">{item.email}</td>
+                        <td className="text-capitalize">{item.role}</td>
+                        <td className="text-capitalize">{item.schoolCode}</td>
+                        <td className="text-capitalize">{item.studentCode}</td>
+                        <td>
+                          {cookies.role === "admin" ? (
+                            <Box>
+                              <Tooltip
+                                title="Edit User"
+                                arrow
+                                onClick={() => handleEditUser(item)}>
+                                <IconButton color="secondary">
+                                  <EditIcon />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip
+                                title="Delete User"
+                                arrow
+                                onClick={() => {
+                                  handleDeleteUser(item);
+                                }}>
+                                <IconButton color="error">
+                                  <DeleteForeverIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </Box>
+                          ) : (
+                            ""
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  : ""}
+              </tbody>
+            </Table>
+          </Box>
           <Pagination
             count={
               findItem === ""

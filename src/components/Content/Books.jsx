@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { Table, Dropdown } from "react-bootstrap";
 import {
-  Avatar,
   Button,
   Box,
   Pagination,
@@ -152,22 +151,22 @@ const Books = () => {
               Title
             </Dropdown.Item>
             <Dropdown.Item
-              eventKey="role"
+              eventKey="ISBN"
               className={typeFilter === "ISBN" ? "active" : ""}>
               ISBN
             </Dropdown.Item>
             <Dropdown.Item
-              eventKey="username"
+              eventKey="author"
               className={typeFilter === "author" ? "active" : ""}>
               Author
             </Dropdown.Item>
             <Dropdown.Item
-              eventKey="schoolCode"
+              eventKey="publisher"
               className={typeFilter === "publisher" ? "active" : ""}>
               Publisher
             </Dropdown.Item>
             <Dropdown.Item
-              eventKey="studentCode"
+              eventKey="catagory"
               className={typeFilter === "catagory" ? "active" : ""}>
               Category
             </Dropdown.Item>
@@ -193,66 +192,68 @@ const Books = () => {
       {books.isLoading === true || firstLoading === true ? (
         <LoadingData />
       ) : (
-        <Box className="table-responsive-lg">
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Title</th>
-                <th>ISBN</th>
-                <th>Author</th>
-                <th>Publisher</th>
-                <th>Category</th>
-                <th>Amount</th>
-                <th>Note</th>
-                <th>Update</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {books
-                ? books.bookPerPage.map((item, index) => (
-                    <tr key={item.id} className="align-middle">
-                      <td>{indexPage + index + 1}</td>
-                      <td className="text-capitalize">{item.title}</td>
-                      <td className="text-capitalize">{item.ISBN}</td>
-                      <td className="text-capitalize">{item.author}</td>
-                      <td className="text-capitalize">{item.publisher}</td>
-                      <td className="text-capitalize">{item.category}</td>
-                      <td className="text-capitalize">{item.amount}</td>
-                      <td className="text-capitalize">{item.note}</td>
-                      <td className="text-capitalize">{item.update_on}</td>
-                      <td>
-                        {cookies.role === "admin" ? (
-                          <Box>
-                            <Tooltip
-                              title="Edit Book"
-                              arrow
-                              onClick={() => handleEditBook(item)}>
-                              <IconButton color="secondary">
-                                <EditIcon />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip
-                              title="Delete Book"
-                              arrow
-                              onClick={() => {
-                                handleDeleteBook(item);
-                              }}>
-                              <IconButton color="error">
-                                <DeleteForeverIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </Box>
-                        ) : (
-                          ""
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                : ""}
-            </tbody>
-          </Table>
+        <Box>
+          <Box className="table-responsive-lg">
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Title</th>
+                  <th>ISBN</th>
+                  <th>Author</th>
+                  <th>Publisher</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Note</th>
+                  <th>Update</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {books
+                  ? books.bookPerPage.map((item, index) => (
+                      <tr key={item.id} className="align-middle">
+                        <td>{indexPage + index + 1}</td>
+                        <td className="text-capitalize">{item.title}</td>
+                        <td className="text-capitalize">{item.ISBN}</td>
+                        <td className="text-capitalize">{item.author}</td>
+                        <td className="text-capitalize">{item.publisher}</td>
+                        <td className="text-capitalize">{item.category}</td>
+                        <td className="text-capitalize">{item.amount}</td>
+                        <td className="text-capitalize">{item.note}</td>
+                        <td className="text-capitalize">{item.update_on}</td>
+                        <td>
+                          {cookies.role === "admin" ? (
+                            <Box>
+                              <Tooltip
+                                title="Edit Book"
+                                arrow
+                                onClick={() => handleEditBook(item)}>
+                                <IconButton color="secondary">
+                                  <EditIcon />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip
+                                title="Delete Book"
+                                arrow
+                                onClick={() => {
+                                  handleDeleteBook(item);
+                                }}>
+                                <IconButton color="error">
+                                  <DeleteForeverIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </Box>
+                          ) : (
+                            ""
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  : ""}
+              </tbody>
+            </Table>
+          </Box>
           <Pagination
             count={
               findItem === ""

@@ -4,7 +4,6 @@ import {
   fetchLoanPerPage,
   paidBook,
   loansFindLenght,
-  booksFindList,
 } from "../../redux/loansSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -34,8 +33,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import CloseIcon from "@mui/icons-material/Close";
 import LoadingData from "../LoadingData";
-import EditBook from "./EditBook";
-import AddBook from "./AddBook";
+
+import BookFindItem from "./BookFindItem";
 
 const LibraryLoan = () => {
   useEffect(() => {
@@ -84,70 +83,19 @@ const LibraryLoan = () => {
     setFirstLoading(false);
   };
 
-  //Filter Book List
-  const [openFilterBook, setOpenFilterBook] = useState(false);
-  const [typeFilterBook, setTypeFilterBook] = useState("title");
-  const [findItemBook, setFindItemBook] = useState("");
-  const [loadingFilterBook, setLoadingFilterBook] = useState(false);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      dispatch(booksFindList({ type: typeFilterBook, value: findItemBook }));
-      // setLoadingFilterBook(true);
-    }, 500);
-    return () => {
-      clearTimeout(handler);
-      // setLoadingFilterBook(false);
-    };
-  }, [findItemBook, typeFilterBook]);
-
-  useEffect(() => {
-    if (!openFilterBook) {
-      setOpenFilterBook([]);
-    }
-  }, [openFilterBook]);
-
   return (
     <Box>
       <Box
         sx={{
           paddingX: "16px",
         }}>
-        <Grid container direction="row" gap={1} sx={{ marginY: "16px" }}>
-          <Dropdown
-            onSelect={(e) => {
-              setTypeFilterBook(e);
-            }}>
-            <Dropdown.Toggle
-              variant="warning"
-              className="text-capitalize h-100">
-              Search {typeFilterBook}
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item
-                eventKey="title"
-                className={typeFilter === "title" ? "active" : ""}>
-                Title
-              </Dropdown.Item>
-              <Dropdown.Item
-                eventKey="ISBN"
-                className={typeFilter === "ISBN" ? "active" : ""}>
-                ISBN
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-          <Autocomplete
-            sx={{ width: 300 }}
-            onInputChange={(event, value) => {
-              setFindItemBook(value);
-            }}
-            options={loans.booksFindList.map(
-              (option) => option.title + " - ISBN: " + option.ISBN
-            )}
-            renderInput={(params) => (
-              <TextField {...params} label="Find Book" />
-            )}
-          />
+        <Grid container spacing={{ md: 3 }}>
+          <Grid item xs={12} md={6}>
+            <BookFindItem />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <BookFindItem />
+          </Grid>
         </Grid>
       </Box>
       <Box

@@ -4,10 +4,13 @@ const initialState = {
   loansList: [],
   loanPerPage: [],
   loansFindLenght: [],
+  booksFindList: [],
   isLoading: false,
   error: null,
 };
 const LOANS_URL = "https://637edb84cfdbfd9a63b87c1c.mockapi.io/borrowandreturn";
+const BOOKS_URL = "https://637edb84cfdbfd9a63b87c1c.mockapi.io/books";
+
 export const fetchLoans = createAsyncThunk("loans/fetchLoans", async () => {
   try {
     const res = await axios.get(LOANS_URL);
@@ -45,6 +48,22 @@ export const loansFindLenght = createAsyncThunk(
       const res = await axios.get(
         `${LOANS_URL}?${payload.type}=${payload.value}`
       );
+      return [...res.data];
+    } catch (error) {
+      return error.message;
+    }
+  }
+);
+
+export const booksFindList = createAsyncThunk(
+  "loans/booksFindList",
+  async (payload) => {
+    try {
+      const res = await axios.get(
+        `${BOOKS_URL}?${payload.type}=${payload.value}`
+      );
+      console.log("booksFindList: ", res.data);
+
       return [...res.data];
     } catch (error) {
       return error.message;
@@ -114,6 +133,18 @@ export const loansSlice = createSlice({
         state.loansFindLenght = action.payload;
       })
       .addCase(loansFindLenght.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
+      })
+
+      .addCase(booksFindList.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(booksFindList.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.booksFindList = action.payload;
+      })
+      .addCase(booksFindList.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message;
       });

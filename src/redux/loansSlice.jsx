@@ -137,15 +137,10 @@ export const loansSlice = createSlice({
         state.error = action.error.message;
       })
 
-      .addCase(booksFindList.pending, (state, action) => {
-        state.isLoading = true;
-      })
       .addCase(booksFindList.fulfilled, (state, action) => {
-        state.isLoading = false;
         state.booksFindList = action.payload;
       })
       .addCase(booksFindList.rejected, (state, action) => {
-        state.isLoading = false;
         state.error = action.error.message;
       });
   },

@@ -89,13 +89,10 @@ const LibraryLoan = () => {
   const [typeFilterBook, setTypeFilterBook] = useState("title");
   const [findItemBook, setFindItemBook] = useState("");
   const [loadingFilterBook, setLoadingFilterBook] = useState(false);
-  const handleFilterBook = (e) => {
-    setFindItemBook(e.target.value);
-    console.log("active");
-  };
+
   useEffect(() => {
     const handler = setTimeout(() => {
-      dispatch(booksFindList({ type: "title", value: findItemBook }));
+      dispatch(booksFindList({ type: typeFilterBook, value: findItemBook }));
       // setLoadingFilterBook(true);
     }, 500);
     return () => {
@@ -112,17 +109,46 @@ const LibraryLoan = () => {
 
   return (
     <Box>
-      <Box>
-        <Autocomplete
-          sx={{ width: 300 }}
-          onInputChange={(event, value) => {
-            setFindItemBook(value);
-          }}
-          options={loans.booksFindList.map((option) => option.title)}
-          renderInput={(params) => (
-            <TextField {...params} label="Controllable" />
-          )}
-        />
+      <Box
+        sx={{
+          paddingX: "16px",
+        }}>
+        <Grid container direction="row" gap={1} sx={{ marginY: "16px" }}>
+          <Dropdown
+            onSelect={(e) => {
+              setTypeFilterBook(e);
+            }}>
+            <Dropdown.Toggle
+              variant="warning"
+              className="text-capitalize h-100">
+              Search {typeFilterBook}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item
+                eventKey="title"
+                className={typeFilter === "title" ? "active" : ""}>
+                Title
+              </Dropdown.Item>
+              <Dropdown.Item
+                eventKey="ISBN"
+                className={typeFilter === "ISBN" ? "active" : ""}>
+                ISBN
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+          <Autocomplete
+            sx={{ width: 300 }}
+            onInputChange={(event, value) => {
+              setFindItemBook(value);
+            }}
+            options={loans.booksFindList.map(
+              (option) => option.title + " - ISBN: " + option.ISBN
+            )}
+            renderInput={(params) => (
+              <TextField {...params} label="Find Book" />
+            )}
+          />
+        </Grid>
       </Box>
       <Box
         sx={{

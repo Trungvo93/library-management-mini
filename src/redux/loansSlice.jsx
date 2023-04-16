@@ -10,6 +10,7 @@ const initialState = {
 };
 const LOANS_URL = "https://637edb84cfdbfd9a63b87c1c.mockapi.io/borrowandreturn";
 const BOOKS_URL = "https://637edb84cfdbfd9a63b87c1c.mockapi.io/books";
+const USERS_URL = "https://637edb84cfdbfd9a63b87c1c.mockapi.io/users";
 
 export const fetchLoans = createAsyncThunk("loans/fetchLoans", async () => {
   try {

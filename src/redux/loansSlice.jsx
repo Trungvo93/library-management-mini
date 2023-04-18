@@ -130,7 +130,7 @@ export const loansSlice = createSlice({
   initialState,
   reducer: {
     updateInforLoan: (state, action) => {
-      state.inforLoan = { ...state, ...action.payload };
+      console.log("first");
     },
   },
   extraReducers: (builder) => {
@@ -185,6 +185,7 @@ export const loansSlice = createSlice({
       });
   },
 });
+
 export const { updateInforLoan } = loansSlice.actions;
 
 export default loansSlice.reducer;

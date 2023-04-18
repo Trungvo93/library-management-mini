@@ -46,7 +46,9 @@ const UserFindItem = () => {
   };
 
   //Config User loan
-  console.log("inforLoan: ", loans.inforLoan);
+  const handleTest = () => {
+    dispatch(updateInforLoan({}));
+  };
   return (
     <Box>
       <Grid container direction="row" gap={1} sx={{ marginY: "16px" }}>
@@ -140,7 +142,7 @@ const UserFindItem = () => {
       />
       <Button
         onClick={() => {
-          dispatch(updateInforLoan());
+          handleTest();
         }}>
         Submit
       </Button>

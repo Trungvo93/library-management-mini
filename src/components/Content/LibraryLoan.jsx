@@ -35,6 +35,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import LoadingData from "../LoadingData";
 
 import BookFindItem from "./BookFindItem";
+import UserFindItem from "./UserFindItem";
 
 const LibraryLoan = () => {
   useEffect(() => {
@@ -94,7 +95,7 @@ const LibraryLoan = () => {
             <BookFindItem />
           </Grid>
           <Grid item xs={12} md={6}>
-            <BookFindItem />
+            <UserFindItem />
           </Grid>
         </Grid>
       </Box>

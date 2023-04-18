@@ -5,6 +5,7 @@ const initialState = {
   loanPerPage: [],
   loansFindLenght: [],
   booksFindList: [],
+  usersFindList: [],
   isLoading: false,
   error: null,
 };
@@ -49,6 +50,20 @@ export const loansFindLenght = createAsyncThunk(
       const res = await axios.get(
         `${LOANS_URL}?${payload.type}=${payload.value}`
       );
+      return [...res.data];
+    } catch (error) {
+      return error.message;
+    }
+  }
+);
+
+export const usersFindList = createAsyncThunk(
+  "loans/usersFindList",
+  async (payload) => {
+    try {
+      const res = await axios.get(`${USERS_URL}?role=student`);
+      console.log("usersFindList: ", res.data);
+
       return [...res.data];
     } catch (error) {
       return error.message;
@@ -142,6 +157,12 @@ export const loansSlice = createSlice({
         state.booksFindList = action.payload;
       })
       .addCase(booksFindList.rejected, (state, action) => {
+        state.error = action.error.message;
+      })
+      .addCase(usersFindList.fulfilled, (state, action) => {
+        state.usersFindList = action.payload;
+      })
+      .addCase(usersFindList.rejected, (state, action) => {
         state.error = action.error.message;
       });
   },

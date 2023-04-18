@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  fetchLoans,
-  fetchLoanPerPage,
-  paidBook,
-  loansFindLenght,
-  booksFindList,
-} from "../../redux/loansSlice";
+import { fetchLoans, booksFindList } from "../../redux/loansSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
-import { useCookies } from "react-cookie";
-import { Table, Dropdown } from "react-bootstrap";
+import { Dropdown } from "react-bootstrap";
 import {
   Button,
   Box,
@@ -30,9 +22,6 @@ import {
   Alert,
 } from "@mui/material";
 const BookFindItem = () => {
-  useEffect(() => {
-    dispatch(fetchLoans());
-  }, []);
   const dispatch = useDispatch();
   const loans = useSelector((state) => state.loans);
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchLoans, booksFindList } from "../../redux/loansSlice";
+import { booksFindList } from "../../redux/loansSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Dropdown } from "react-bootstrap";

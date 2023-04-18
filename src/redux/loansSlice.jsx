@@ -6,6 +6,20 @@ const initialState = {
   loansFindLenght: [],
   booksFindList: [],
   usersFindList: [],
+  inforLoan: {
+    studentCode: "",
+    ISBN: "",
+    dayBorrow: "",
+    dayReturn: "",
+    dayReturned: "",
+    amount: "",
+    note: "",
+    bookID: "",
+    studentID: "",
+    name: "",
+    title: "",
+    status: "",
+  },
   isLoading: false,
   error: null,
 };
@@ -114,7 +128,11 @@ export const paidBook = createAsyncThunk("loans/paidBook", async (payload) => {
 export const loansSlice = createSlice({
   name: "loans",
   initialState,
-  reducer: {},
+  reducer: {
+    updateInforLoan: (state, action) => {
+      state.inforLoan = { ...state, ...action.payload };
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchLoans.pending, (state, action) => {
@@ -167,5 +185,6 @@ export const loansSlice = createSlice({
       });
   },
 });
+export const { updateInforLoan } = loansSlice.actions;
 
 export default loansSlice.reducer;

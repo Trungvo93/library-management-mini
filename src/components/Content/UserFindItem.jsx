@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { fetchLoans, usersFindList } from "../../redux/loansSlice";
+import { usersFindList, updateInforLoan } from "../../redux/loansSlice";
 import { useDispatch, useSelector } from "react-redux";
-
 import { Dropdown } from "react-bootstrap";
 import {
   Button,
@@ -32,9 +31,6 @@ const UserFindItem = () => {
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      console.log("chạy nè");
-      dispatch(usersFindList({ type: typeFilterUser, value: findItemUser }));
-
       setLoadingFilterUser(false);
     }, 500);
     return () => {
@@ -45,59 +41,44 @@ const UserFindItem = () => {
 
   const [selectedOption, setSelectedOption] = useState(null);
 
-  const getOptionSelected = (option, value) => option.id === value.id;
-
   const handleChange = (event, newValue) => {
     setSelectedOption(newValue);
   };
 
-  const getSelectedOptionObject = () => {
-    return loans.usersFindList.find((option) =>
-      getOptionSelected(option, selectedOption)
-    );
-  };
-  console.log(selectedOption);
+  //Config User loan
+  console.log("inforLoan: ", loans.inforLoan);
   return (
     <Box>
       <Grid container direction="row" gap={1} sx={{ marginY: "16px" }}>
-        <Dropdown
-          onSelect={(e) => {
-            setTypeFilterUser(e);
-          }}>
-          <Dropdown.Toggle variant="primary" className="text-capitalize h-100">
-            Search {typeFilterUser}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item
-              eventKey="name"
-              className={typeFilterUser === "name" ? "active" : ""}>
-              Name
-            </Dropdown.Item>
-            <Dropdown.Item
-              eventKey="studentCode"
-              className={typeFilterUser === "studentCode" ? "active" : ""}>
-              Student Code
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
         <Autocomplete
           freeSolo
           sx={{ flexGrow: 1 }}
           loading={loadingFilterUser}
-          getOptionSelected={getOptionSelected}
           value={selectedOption}
+          onOpen={() => {
+            dispatch(usersFindList());
+          }}
+          onInputChange={(event, value) => {
+            setFindItemUser(value);
+          }}
           onChange={handleChange}
           getOptionLabel={(option) => {
             {
-              // console.log(option);
               return option.name + " - Student Code: " + option.studentCode;
             }
           }}
           options={loans.usersFindList}
           renderInput={(params) => (
             <TextField
+              color="secondary"
+              sx={{
+                "& .MuiInputLabel-root ": {
+                  WebkitTextFillColor: "#9C27B0",
+                  fontWeight: "bold",
+                },
+              }}
               {...params}
-              label="Find Student"
+              label="Find Student..."
               InputProps={{
                 ...params.InputProps,
                 endAdornment: (
@@ -117,9 +98,7 @@ const UserFindItem = () => {
       {/* Show data founded */}
       <TextField
         margin="dense"
-        value={
-          loans.usersFindList.length == 1 ? loans.usersFindList[0].name : ""
-        }
+        value={selectedOption ? selectedOption.name : ""}
         disabled
         label="Name"
         fullWidth
@@ -127,6 +106,7 @@ const UserFindItem = () => {
           "& .MuiInputBase-input.Mui-disabled": {
             WebkitTextFillColor: "#000000",
           },
+
           "& .MuiInputLabel-root.Mui-disabled": {
             WebkitTextFillColor: "#1c79c0",
             fontWeight: "bold",
@@ -135,11 +115,7 @@ const UserFindItem = () => {
       />
       <TextField
         margin="dense"
-        value={
-          loans.usersFindList.length == 1
-            ? loans.usersFindList[0].studentCode
-            : ""
-        }
+        value={selectedOption ? selectedOption.studentCode : ""}
         disabled
         label="Student Code"
         fullWidth
@@ -153,6 +129,21 @@ const UserFindItem = () => {
           },
         }}
       />
+
+      <TextField
+        type="date"
+        label="Day Return"
+        variant="outlined"
+        fullWidth
+        margin="dense"
+        required
+      />
+      <Button
+        onClick={() => {
+          dispatch(updateInforLoan());
+        }}>
+        Submit
+      </Button>
     </Box>
   );
 };

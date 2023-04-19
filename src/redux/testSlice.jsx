@@ -7,10 +7,19 @@ const initialState = {
   loansFindLenght: [],
   booksFindList: [],
   usersFindList: [],
-  inforBookLoan: {
-    ISBN: null,
-    amount: 1,
-    title: null,
+  inforLoan: {
+    studentCode: "",
+    ISBN: "",
+    dayBorrow: "",
+    dayReturn: "",
+    dayReturned: "",
+    amount: "",
+    note: "",
+    bookID: "",
+    studentID: "",
+    name: "",
+    title: "",
+    status: "",
   },
   isLoading: false,
   error: null,
@@ -80,7 +89,9 @@ export const booksFindList = createAsyncThunk(
   "loans/booksFindList",
   async (payload) => {
     try {
-      const res = await axios.get(`${BOOKS_URL}`);
+      const res = await axios.get(
+        `${BOOKS_URL}?${payload.type}=${payload.value}`
+      );
       console.log("booksFindList: ", res.data);
 
       return [...res.data];
@@ -93,11 +104,6 @@ export const booksFindList = createAsyncThunk(
 export const addLoan = createAsyncThunk("loans/addLoan", async (payload) => {
   try {
     await axios.post(`${LOANS_URL}`, { ...payload });
-    const res = await axios.get(`${BOOKS_URL}?ISBN=${payload.ISBN}`);
-
-    res.data[0].amount = res.data[0].amount - Number(payload.amount);
-    console.log(res.data[0]);
-    await axios.put(`${BOOKS_URL}/${res.data[0].id}`, { ...res.data[0] });
   } catch (error) {
     return error.message;
   }
@@ -118,12 +124,12 @@ export const paidBook = createAsyncThunk("loans/paidBook", async (payload) => {
     return error.message;
   }
 });
-export const loansSlice = createSlice({
-  name: "loans",
+export const testSlice = createSlice({
+  name: "test",
   initialState,
   reducers: {
-    inforBookLoan: (state, action) => {
-      state.inforBookLoan = { ...action.payload };
+    updateInfoLoan: (state, action) => {
+      console.log("action: ", action);
     },
   },
   extraReducers: (builder) => {
@@ -179,5 +185,5 @@ export const loansSlice = createSlice({
   },
 });
 
-export const { inforBookLoan } = loansSlice.actions;
-export default loansSlice.reducer;
+export const { updateInfoLoan } = testSlice.actions;
+export default testSlice.reducer;

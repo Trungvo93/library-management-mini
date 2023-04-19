@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { usersFindList, updateInforLoan } from "../../redux/loansSlice";
+import { usersFindList, addLoan, inforBookLoan } from "../../redux/loansSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Dropdown } from "react-bootstrap";
 import {
@@ -25,7 +25,6 @@ const UserFindItem = () => {
   const loans = useSelector((state) => state.loans);
 
   //Filter Book List
-  const [typeFilterUser, setTypeFilterUser] = useState("name");
   const [findItemUser, setFindItemUser] = useState("");
   const [loadingFilterUser, setLoadingFilterUser] = useState(false);
 
@@ -37,7 +36,8 @@ const UserFindItem = () => {
       clearTimeout(handler);
       setLoadingFilterUser(true);
     };
-  }, [findItemUser, typeFilterUser]);
+  }, [findItemUser]);
+  const [inputField, setInputField] = useState("");
 
   const [selectedOption, setSelectedOption] = useState(null);
 
@@ -46,8 +46,45 @@ const UserFindItem = () => {
   };
 
   //Config User loan
-  const handleTest = () => {
-    dispatch(updateInforLoan({}));
+
+  //Config Min Day
+  const dateNow = new Date();
+  const year = dateNow.getFullYear();
+  let month = dateNow.getMonth() + 1;
+  if (month < 10) {
+    month = "0" + month.toString();
+  }
+  let date = dateNow.getDate();
+  if (date < 10) {
+    date = "0" + date.toString();
+  }
+
+  const [amount, setAmount] = useState(1);
+  const [dayReturn, setDayReturn] = useState(year + "-" + month + "-" + date);
+  const [note, setNote] = useState("");
+  const handleSubmit = () => {
+    if (loans.inforBookLoan.ISBN !== null) {
+      console.log("inforBookLoan: ", loans.inforBookLoan);
+      const formSubmit = {
+        dayBorrow: year + "-" + month + "-" + date,
+        dayReturn: dayReturn,
+        ISBN: loans.inforBookLoan.ISBN,
+        title: loans.inforBookLoan.title,
+        amount: amount,
+        note: note,
+        name: selectedOption.name,
+        studentCode: selectedOption.studentCode,
+        status: "",
+        dayReturned: "",
+      };
+      dispatch(addLoan({ ...formSubmit }));
+      dispatch(inforBookLoan({ ISBN: null, amount: 1, title: null }));
+      setSelectedOption(null);
+      setInputField("");
+      setAmount(1);
+      setDayReturn(year + "-" + month + "-" + date);
+      setNote("");
+    }
   };
   return (
     <Box>
@@ -60,6 +97,7 @@ const UserFindItem = () => {
           onOpen={() => {
             dispatch(usersFindList());
           }}
+          inputValue={inputField}
           onInputChange={(event, value) => {
             setFindItemUser(value);
           }}
@@ -131,21 +169,56 @@ const UserFindItem = () => {
           },
         }}
       />
-
-      <TextField
-        type="date"
-        label="Day Return"
-        variant="outlined"
-        fullWidth
-        margin="dense"
-        required
-      />
-      <Button
-        onClick={() => {
-          handleTest();
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
         }}>
-        Submit
-      </Button>
+        <TextField
+          type="date"
+          value={dayReturn}
+          onChange={(e) => setDayReturn(e.target.value)}
+          label="Day Return"
+          variant="outlined"
+          fullWidth
+          margin="dense"
+          required
+          inputProps={{
+            min: year + "-" + month + "-" + date,
+          }}
+        />
+        <TextField
+          type="number"
+          label="Amount"
+          variant="outlined"
+          fullWidth
+          margin="dense"
+          required
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          inputProps={{
+            min: 1,
+            max: loans.inforBookLoan.amount,
+          }}
+        />
+        <TextField
+          label="Note"
+          variant="outlined"
+          fullWidth
+          margin="dense"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
+        <Button
+          type="submit"
+          fullWidth
+          margin="dense"
+          variant="contained"
+          size="large"
+          sx={{ marginTop: "8px", marginBottom: "4px", height: "56px" }}>
+          Submit
+        </Button>
+      </form>
     </Box>
   );
 };

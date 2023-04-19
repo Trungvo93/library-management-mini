@@ -3,7 +3,6 @@ import loginSlice from "./loginSlice";
 import usersSlice from "./usersSlice";
 import booksSlice from "./booksSlice";
 import loansSlice from "./loansSlice";
-
 export const store = configureStore({
   reducer: {
     login: loginSlice,

@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { booksFindList } from "../../redux/loansSlice";
+import {
+  booksFindList,
+  updateInfoLoan,
+  inforBookLoan,
+} from "../../redux/loansSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Dropdown } from "react-bootstrap";
@@ -32,8 +36,6 @@ const BookFindItem = () => {
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      dispatch(booksFindList({ type: typeFilterBook, value: findItemBook }));
-
       setLoadingFilterBook(false);
     }, 500);
     return () => {
@@ -42,50 +44,58 @@ const BookFindItem = () => {
     };
   }, [findItemBook, typeFilterBook]);
 
+  const [inputField, setInputField] = useState("");
+  useEffect(() => {
+    if (loans.inforBookLoan.ISBN === null) {
+      setInputField("");
+      setSelectedOption(null);
+    }
+  }, [loans.inforBookLoan]);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const handleChange = (event, newValue) => {
+    setSelectedOption(newValue);
+    if (newValue !== null) {
+      dispatch(
+        inforBookLoan({
+          ISBN: newValue.ISBN,
+          amount: newValue.amount,
+          title: newValue.title,
+        })
+      );
+    }
+  };
   return (
     <Box>
       <Grid container direction="row" gap={1} sx={{ marginY: "16px" }}>
-        <Dropdown
-          onSelect={(e) => {
-            setTypeFilterBook(e);
-          }}>
-          <Dropdown.Toggle variant="primary" className="text-capitalize h-100">
-            Search {typeFilterBook}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item
-              eventKey="title"
-              className={typeFilterBook === "title" ? "active" : ""}>
-              Title
-            </Dropdown.Item>
-            <Dropdown.Item
-              eventKey="ISBN"
-              className={typeFilterBook === "ISBN" ? "active" : ""}>
-              ISBN
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
         <Autocomplete
           freeSolo
           sx={{ flexGrow: 1 }}
+          loading={loadingFilterBook}
+          value={selectedOption}
+          onOpen={() => {
+            dispatch(booksFindList());
+          }}
+          inputValue={inputField}
           onInputChange={(event, value) => {
+            setInputField(value);
             setFindItemBook(value);
           }}
-          loading={loadingFilterBook}
-          isOptionEqualToValue={(option, value) => {
-            console.log("value: " + value);
-            return option === value;
-          }}
+          onChange={handleChange}
           getOptionLabel={(option) => {
-            return option.toString();
+            return option.title + " - ISBN: " + option.ISBN;
           }}
-          options={loans.booksFindList.map((option) =>
-            typeFilterBook === "title" ? option.title : option.ISBN
-          )}
+          options={loans.booksFindList}
           renderInput={(params) => (
             <TextField
+              color="secondary"
+              sx={{
+                "& .MuiInputLabel-root ": {
+                  WebkitTextFillColor: "#9C27B0",
+                  fontWeight: "bold",
+                },
+              }}
               {...params}
-              label="Find Book"
+              label="Find Book..."
               InputProps={{
                 ...params.InputProps,
                 endAdornment: (
@@ -103,9 +113,7 @@ const BookFindItem = () => {
       </Grid>
       <TextField
         margin="dense"
-        value={
-          loans.booksFindList.length == 1 ? loans.booksFindList[0].title : ""
-        }
+        value={selectedOption ? selectedOption.title : ""}
         disabled
         label="Title"
         fullWidth
@@ -121,9 +129,7 @@ const BookFindItem = () => {
       />
       <TextField
         margin="dense"
-        value={
-          loans.booksFindList.length == 1 ? loans.booksFindList[0].ISBN : ""
-        }
+        value={selectedOption ? selectedOption.ISBN : ""}
         disabled
         label="ISBN"
         fullWidth
@@ -139,9 +145,7 @@ const BookFindItem = () => {
       />
       <TextField
         margin="dense"
-        value={
-          loans.booksFindList.length == 1 ? loans.booksFindList[0].amount : ""
-        }
+        value={selectedOption ? selectedOption.amount : ""}
         disabled
         label="Amount"
         fullWidth
@@ -157,9 +161,7 @@ const BookFindItem = () => {
       />
       <TextField
         margin="dense"
-        value={
-          loans.booksFindList.length == 1 ? loans.booksFindList[0].author : ""
-        }
+        value={selectedOption ? selectedOption.author : ""}
         disabled
         label="Author"
         fullWidth
@@ -175,11 +177,7 @@ const BookFindItem = () => {
       />
       <TextField
         margin="dense"
-        value={
-          loans.booksFindList.length == 1
-            ? loans.booksFindList[0].publisher
-            : ""
-        }
+        value={selectedOption ? selectedOption.publisher : ""}
         disabled
         label="Publisher"
         fullWidth
@@ -195,9 +193,7 @@ const BookFindItem = () => {
       />
       <TextField
         margin="dense"
-        value={
-          loans.booksFindList.length == 1 ? loans.booksFindList[0].category : ""
-        }
+        value={selectedOption ? selectedOption.category : ""}
         disabled
         label="Category"
         fullWidth

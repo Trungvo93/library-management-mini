@@ -22,7 +22,6 @@ export const loginSlice = createSlice({
   initialState,
   reducers: {
     vertifyLogin: (state, action) => {
-      console.log("staet: ", action);
       state.current = action.payload;
       state.status = "succeeded";
     },

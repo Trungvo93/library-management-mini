@@ -84,7 +84,18 @@ const UserFindItem = () => {
       setAmount(1);
       setDayReturn(year + "-" + month + "-" + date);
       setNote("");
+      setOpenAlertAdd(true);
     }
+  };
+
+  //Show alert delete success message
+  const [openAlertAdd, setOpenAlertAdd] = useState(false);
+  const handleCloseAlertAdd = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenAlertAdd(false);
   };
   return (
     <Box>
@@ -219,6 +230,18 @@ const UserFindItem = () => {
           Submit
         </Button>
       </form>
+      <Snackbar
+        open={openAlertAdd}
+        autoHideDuration={3000}
+        onClose={handleCloseAlertAdd}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}>
+        <Alert
+          onClose={handleCloseAlertAdd}
+          severity="success"
+          sx={{ width: "100%" }}>
+          Add loan success!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

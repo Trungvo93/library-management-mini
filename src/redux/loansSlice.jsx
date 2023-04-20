@@ -96,7 +96,6 @@ export const addLoan = createAsyncThunk("loans/addLoan", async (payload) => {
     const res = await axios.get(`${BOOKS_URL}?ISBN=${payload.ISBN}`);
 
     res.data[0].amount = res.data[0].amount - Number(payload.amount);
-    console.log(res.data[0]);
     await axios.put(`${BOOKS_URL}/${res.data[0].id}`, { ...res.data[0] });
   } catch (error) {
     return error.message;
@@ -113,7 +112,16 @@ export const editLoan = createAsyncThunk("loans/editLoan", async (payload) => {
 
 export const paidBook = createAsyncThunk("loans/paidBook", async (payload) => {
   try {
-    await axios.delete(`${LOANS_URL}/${payload}`);
+    await axios.put(`${LOANS_URL}/${payload.id}`, {
+      ...payload,
+      status: "done",
+    });
+
+    const res = await axios.get(`${BOOKS_URL}/${payload.bookID}`);
+    res.data.amount = res.data.amount + Number(payload.amount);
+    await axios.put(`${BOOKS_URL}/${res.data.id}`, { ...res.data });
+    console.log("paidbook");
+    const respon = await axios.get(`${LOANS_URL}`);
   } catch (error) {
     return error.message;
   }

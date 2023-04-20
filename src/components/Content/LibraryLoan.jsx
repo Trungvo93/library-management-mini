@@ -36,7 +36,7 @@ import LoadingData from "../LoadingData";
 
 import BookFindItem from "./BookFindItem";
 import UserFindItem from "./UserFindItem";
-
+import RotateLeftIcon from "@mui/icons-material/RotateLeft";
 const LibraryLoan = () => {
   useEffect(() => {
     dispatch(fetchLoans());
@@ -84,6 +84,14 @@ const LibraryLoan = () => {
     setFirstLoading(false);
   };
 
+  //Paid book
+  const handlePaidBook = (item) => {
+    dispatch(paidBook(item));
+
+    //Vẫn không load được status, cần check lại
+    handleChangePage("", 1);
+  };
+  console.log("loans: ", loans.loansList);
   return (
     <Box>
       <Box
@@ -162,11 +170,6 @@ const LibraryLoan = () => {
             value={findItem}
             onChange={handleFilter}
           />
-          <Tooltip title="Add Book" arrow>
-            <IconButton color="primary">
-              <LibraryAddIcon />
-            </IconButton>
-          </Tooltip>
         </Grid>
 
         {/* Show table data */}
@@ -210,11 +213,19 @@ const LibraryLoan = () => {
                                     <EditIcon />
                                   </IconButton>
                                 </Tooltip>
-                                <Tooltip title="Paid Book" arrow>
-                                  <IconButton color="error">
-                                    <DeleteForeverIcon />
-                                  </IconButton>
-                                </Tooltip>
+                                {item.status !== "done" ? (
+                                  <Tooltip title="Paid Book" arrow>
+                                    <IconButton
+                                      color="error"
+                                      onClick={() => {
+                                        handlePaidBook(item);
+                                      }}>
+                                      <RotateLeftIcon />
+                                    </IconButton>
+                                  </Tooltip>
+                                ) : (
+                                  ""
+                                )}
                               </Box>
                             ) : (
                               ""

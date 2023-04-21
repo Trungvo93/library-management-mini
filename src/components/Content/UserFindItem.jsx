@@ -74,7 +74,7 @@ const UserFindItem = () => {
         note: note,
         name: selectedOption.name,
         studentCode: selectedOption.studentCode,
-        status: "",
+        status: "unpaid",
         dayReturned: "",
       };
       dispatch(addLoan({ ...formSubmit }));

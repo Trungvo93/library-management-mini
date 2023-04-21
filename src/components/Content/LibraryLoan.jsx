@@ -37,6 +37,7 @@ import LoadingData from "../LoadingData";
 import BookFindItem from "./BookFindItem";
 import UserFindItem from "./UserFindItem";
 import RotateLeftIcon from "@mui/icons-material/RotateLeft";
+import loansStyle from "../../css/Loans.module.scss";
 const LibraryLoan = () => {
   useEffect(() => {
     dispatch(fetchLoans());
@@ -60,14 +61,14 @@ const LibraryLoan = () => {
     }, 500);
     return () => clearTimeout(handler);
   }, [findItem, typeFilter]);
-  const handleChangePage = (event, value) => {
+  const handleChangePage = async (event, value) => {
     const indexPage = value;
     setPage(indexPage);
     setIndexPage(value * 10 - 10);
     if (findItem === "") {
-      dispatch(fetchLoanPerPage({ indexPage: indexPage }));
+      await dispatch(fetchLoanPerPage({ indexPage: indexPage }));
     } else {
-      dispatch(
+      await dispatch(
         fetchLoanPerPage({
           type: typeFilter,
           value: findItem,
@@ -85,13 +86,33 @@ const LibraryLoan = () => {
   };
 
   //Paid book
-  const handlePaidBook = (item) => {
-    dispatch(paidBook(item));
-
-    //Vẫn không load được status, cần check lại
-    handleChangePage("", 1);
+  const handlePaidBook = async (item) => {
+    await dispatch(paidBook(item));
+    handleChangePage("", page);
+    setOpenAlertPaid(true);
   };
-  console.log("loans: ", loans.loansList);
+
+  //Show open Dialog paid book
+  const [openPaid, setOpenPaid] = useState(false);
+  const [itemPaid, setItemPaid] = useState({});
+  const handleClickOpenPaid = (item) => {
+    setItemPaid({ ...item });
+    setOpenPaid(true);
+  };
+
+  const handleClosePaid = () => {
+    setOpenPaid(false);
+  };
+
+  //Show alert paid success message
+  const [openAlertPaid, setOpenAlertPaid] = useState(false);
+  const handleCloseAlertPaid = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenAlertPaid(false);
+  };
   return (
     <Box>
       <Box
@@ -178,7 +199,7 @@ const LibraryLoan = () => {
         ) : (
           <Box>
             <Box className="table-responsive-lg">
-              <Table striped bordered hover>
+              <Table className="table table-hover ">
                 <thead>
                   <tr>
                     <th>#</th>
@@ -201,7 +222,22 @@ const LibraryLoan = () => {
                           <td className="text-capitalize">{item.name}</td>
                           <td className="text-capitalize">{item.dayBorrow}</td>
                           <td className="text-capitalize">{item.dayReturn}</td>
-                          <td className="text-capitalize">{item.status}</td>
+                          <td className={`text-capitalize `}>
+                            <span
+                              className={`${
+                                item.status === "done" ? loansStyle.done : ""
+                              } ${
+                                item.status === "Expires"
+                                  ? loansStyle.expires
+                                  : ""
+                              } ${
+                                item.status === "unpaid"
+                                  ? loansStyle.unpaid
+                                  : ""
+                              }`}>
+                              {item.status}
+                            </span>
+                          </td>
                           <td className="text-capitalize">{item.amount}</td>
                           <td className="text-capitalize">{item.note}</td>
                           <td>
@@ -218,7 +254,8 @@ const LibraryLoan = () => {
                                     <IconButton
                                       color="error"
                                       onClick={() => {
-                                        handlePaidBook(item);
+                                        // handlePaidBook(item);
+                                        handleClickOpenPaid(item);
                                       }}>
                                       <RotateLeftIcon />
                                     </IconButton>
@@ -249,6 +286,35 @@ const LibraryLoan = () => {
             />
           </Box>
         )}
+        <Dialog open={openPaid} onClose={handleClosePaid}>
+          <DialogTitle>Confirm Paid Book</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              <TextField
+                label="Note"
+                margin="dense"
+                value={itemPaid.note}></TextField>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClosePaid}>Disagree</Button>
+            <Button onClick={handleClosePaid} autoFocus>
+              Agree
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Snackbar
+          open={openAlertPaid}
+          autoHideDuration={3000}
+          onClose={handleCloseAlertPaid}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}>
+          <Alert
+            onClose={handleCloseAlertPaid}
+            severity="success"
+            sx={{ width: "100%" }}>
+            Paid book success!
+          </Alert>
+        </Snackbar>
       </Box>
     </Box>
   );

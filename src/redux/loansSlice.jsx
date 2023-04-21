@@ -120,8 +120,6 @@ export const paidBook = createAsyncThunk("loans/paidBook", async (payload) => {
     const res = await axios.get(`${BOOKS_URL}/${payload.bookID}`);
     res.data.amount = res.data.amount + Number(payload.amount);
     await axios.put(`${BOOKS_URL}/${res.data.id}`, { ...res.data });
-    console.log("paidbook");
-    const respon = await axios.get(`${LOANS_URL}`);
   } catch (error) {
     return error.message;
   }
@@ -152,7 +150,6 @@ export const loansSlice = createSlice({
       })
       .addCase(fetchLoanPerPage.fulfilled, (state, action) => {
         state.isLoading = false;
-
         state.loanPerPage = action.payload;
       })
       .addCase(fetchLoanPerPage.rejected, (state, action) => {

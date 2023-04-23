@@ -21,8 +21,27 @@ const USERS_URL = "https://637edb84cfdbfd9a63b87c1c.mockapi.io/users";
 export const fetchLoans = createAsyncThunk("loans/fetchLoans", async () => {
   try {
     const res = await axios.get(LOANS_URL);
+    const dateNow = new Date();
+    const year = dateNow.getFullYear();
+    let month = dateNow.getMonth() + 1;
+    if (month < 10) {
+      month = "0" + month.toString();
+    }
+    let date = dateNow.getDate();
+    if (date < 10) {
+      date = "0" + date.toString();
+    }
 
-    return [...res.data];
+    const updateExpired = res.data.map((item) => {
+      if (
+        Date.parse(item.dayReturned) <
+        DataTransfer.parse(year + "-" + month + "-" + date)
+      ) {
+        item.status = "expired";
+      }
+      return item;
+    });
+    return [...updateExpired];
   } catch (error) {
     return error.message;
   }
@@ -67,7 +86,6 @@ export const usersFindList = createAsyncThunk(
   async (payload) => {
     try {
       const res = await axios.get(`${USERS_URL}?role=student`);
-      console.log("usersFindList: ", res.data);
 
       return [...res.data];
     } catch (error) {
@@ -81,7 +99,6 @@ export const booksFindList = createAsyncThunk(
   async (payload) => {
     try {
       const res = await axios.get(`${BOOKS_URL}`);
-      console.log("booksFindList: ", res.data);
 
       return [...res.data];
     } catch (error) {
@@ -112,9 +129,20 @@ export const editLoan = createAsyncThunk("loans/editLoan", async (payload) => {
 
 export const paidBook = createAsyncThunk("loans/paidBook", async (payload) => {
   try {
+    const dateNow = new Date();
+    const year = dateNow.getFullYear();
+    let month = dateNow.getMonth() + 1;
+    if (month < 10) {
+      month = "0" + month.toString();
+    }
+    let date = dateNow.getDate();
+    if (date < 10) {
+      date = "0" + date.toString();
+    }
     await axios.put(`${LOANS_URL}/${payload.id}`, {
       ...payload,
       status: "done",
+      dayReturned: year + "-" + month + "-" + date,
     });
 
     const res = await axios.get(`${BOOKS_URL}/${payload.bookID}`);
@@ -124,6 +152,7 @@ export const paidBook = createAsyncThunk("loans/paidBook", async (payload) => {
     return error.message;
   }
 });
+
 export const loansSlice = createSlice({
   name: "loans",
   initialState,

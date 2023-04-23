@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { usersFindList, addLoan, inforBookLoan } from "../../redux/loansSlice";
+import {
+  usersFindList,
+  addLoan,
+  inforBookLoan,
+  fetchLoans,
+  fetchLoanPerPage,
+} from "../../redux/loansSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Dropdown } from "react-bootstrap";
 import {
@@ -62,9 +68,8 @@ const UserFindItem = () => {
   const [amount, setAmount] = useState(1);
   const [dayReturn, setDayReturn] = useState(year + "-" + month + "-" + date);
   const [note, setNote] = useState("");
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (loans.inforBookLoan.ISBN !== null) {
-      console.log("inforBookLoan: ", loans.inforBookLoan);
       const formSubmit = {
         dayBorrow: year + "-" + month + "-" + date,
         dayReturn: dayReturn,
@@ -77,8 +82,9 @@ const UserFindItem = () => {
         status: "unpaid",
         dayReturned: "",
       };
-      dispatch(addLoan({ ...formSubmit }));
+      await dispatch(addLoan({ ...formSubmit }));
       dispatch(inforBookLoan({ ISBN: null, amount: 1, title: null }));
+      dispatch(fetchLoanPerPage({ indexPage: 1 }));
       setSelectedOption(null);
       setInputField("");
       setAmount(1);

@@ -21,6 +21,7 @@ const USERS_URL = "https://637edb84cfdbfd9a63b87c1c.mockapi.io/users";
 export const fetchLoans = createAsyncThunk("loans/fetchLoans", async () => {
   try {
     const res = await axios.get(LOANS_URL);
+
     const dateNow = new Date();
     const year = dateNow.getFullYear();
     let month = dateNow.getMonth() + 1;
@@ -32,16 +33,20 @@ export const fetchLoans = createAsyncThunk("loans/fetchLoans", async () => {
       date = "0" + date.toString();
     }
 
-    const updateExpired = res.data.map((item) => {
+    for await (const item of res.data) {
       if (
-        Date.parse(item.dayReturned) <
-        DataTransfer.parse(year + "-" + month + "-" + date)
+        Date.parse(item.dayReturn) <
+          Date.parse(year + "-" + month + "-" + date) &&
+        item.status === "unpaid"
       ) {
         item.status = "expired";
+        await axios.put(`${LOANS_URL}/${item.id}`, {
+          ...item,
+        });
       }
-      return item;
-    });
-    return [...updateExpired];
+    }
+
+    return [...res.data];
   } catch (error) {
     return error.message;
   }
@@ -54,6 +59,7 @@ export const fetchLoanPerPage = createAsyncThunk(
         const res = await axios.get(
           `${LOANS_URL}?limit=10&&page=${payload.indexPage}`
         );
+
         return [...res.data];
       } else {
         const res = await axios.get(
@@ -144,10 +150,12 @@ export const paidBook = createAsyncThunk("loans/paidBook", async (payload) => {
       status: "done",
       dayReturned: year + "-" + month + "-" + date,
     });
+    const res = await axios.get(`${BOOKS_URL}?ISBN=${payload.ISBN}`);
 
-    const res = await axios.get(`${BOOKS_URL}/${payload.bookID}`);
-    res.data.amount = res.data.amount + Number(payload.amount);
-    await axios.put(`${BOOKS_URL}/${res.data.id}`, { ...res.data });
+    res.data[0].amount = res.data[0].amount + Number(payload.amount);
+    await axios.put(`${BOOKS_URL}/${res.data[0].id}`, {
+      ...res.data[0],
+    });
   } catch (error) {
     return error.message;
   }

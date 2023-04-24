@@ -44,6 +44,7 @@ const LibraryLoan = () => {
   useEffect(() => {
     dispatch(fetchLoans());
   }, []);
+
   const dispatch = useDispatch();
   const [cookies] = useCookies();
   const loans = useSelector((state) => state.loans);
@@ -158,7 +159,6 @@ const LibraryLoan = () => {
 
     setOpenAlertPaid(false);
   };
-  console.log("loans:", loans.loanPerPage);
   return (
     <Box>
       <Box

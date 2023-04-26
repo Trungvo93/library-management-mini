@@ -1,0 +1,11 @@
+.iconHover:hover {
+  transform: scale(1.2);
+}
+.iconHover {
+  transition: all 0.3s;
+}
+
+.navigate:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}

@@ -24,16 +24,12 @@ import {
   TextField,
   Tooltip,
   IconButton,
-  Autocomplete,
-  CircularProgress,
   Snackbar,
   Alert,
   Typography,
 } from "@mui/material";
-import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import CloseIcon from "@mui/icons-material/Close";
+
 import LoadingData from "../LoadingData";
 
 import BookFindItem from "./BookFindItem";
@@ -79,13 +75,13 @@ const LibraryLoan = () => {
           indexPage: indexPage,
         })
       );
-      dispatch(
-        loansFindLenght({
-          type: typeFilter,
-          value: findItem,
-        })
-      );
     }
+    await dispatch(
+      loansFindLenght({
+        type: typeFilter,
+        value: findItem,
+      })
+    );
     setFirstLoading(false);
   };
 
@@ -238,7 +234,7 @@ const LibraryLoan = () => {
             onChange={handleFilter}
           />
         </Grid>
-
+        {loans.testA}
         {/* Show table data */}
         {loans.isLoading === true || firstLoading === true ? (
           <LoadingData />
@@ -263,7 +259,7 @@ const LibraryLoan = () => {
                 </thead>
                 <tbody>
                   {loans
-                    ? loans.loanPerPage.map((item, index) => (
+                    ? loans.loanPerPage.list.map((item, index) => (
                         <tr key={item.id} className="align-middle">
                           <td>{indexPage + index + 1}</td>
                           <td className="text-capitalize">{item.title}</td>
@@ -334,12 +330,8 @@ const LibraryLoan = () => {
               </Table>
             </Box>
             <Pagination
-              count={
-                findItem === ""
-                  ? Math.ceil(loans.loansList.length / 10)
-                  : Math.ceil(loans.loansFindLenght.length / 10)
-              }
-              page={page}
+              count={Math.ceil(loans.loansFindLenght.length / 10)}
+              page={loans.loanPerPage.indexPage}
               onChange={handleChangePage}
               className="d-flex justify-content-end my-2"
             />

@@ -5,22 +5,14 @@ import {
   inforBookLoan,
   fetchLoans,
   fetchLoanPerPage,
+  loansFindLenght,
 } from "../../redux/loansSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { Dropdown } from "react-bootstrap";
 import {
   Button,
   Box,
-  Pagination,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   Grid,
   TextField,
-  Tooltip,
-  IconButton,
   Autocomplete,
   CircularProgress,
   Snackbar,
@@ -83,8 +75,20 @@ const UserFindItem = () => {
         dayReturned: "",
       };
       await dispatch(addLoan({ ...formSubmit }));
-      dispatch(inforBookLoan({ ISBN: null, amount: 1, title: null }));
-      dispatch(fetchLoanPerPage({ indexPage: 1 }));
+      await dispatch(inforBookLoan({ ISBN: null, amount: 1, title: null }));
+      await dispatch(
+        fetchLoanPerPage({
+          indexPage: loans.loanPerPage.indexPage,
+          type: loans.loanPerPage.type,
+          value: loans.loanPerPage.item,
+        })
+      );
+      await dispatch(
+        loansFindLenght({
+          type: loans.loansFindLenght.type,
+          value: loans.loansFindLenght.item,
+        })
+      );
       setSelectedOption(null);
       setInputField("");
       setAmount(1);

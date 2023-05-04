@@ -3,8 +3,8 @@ import axios from "axios";
 
 const initialState = {
   loansList: [],
-  loanPerPage: [],
-  loansFindLenght: [],
+  loanPerPage: { list: [], indexPage: 1, type: "", item: "" },
+  loansFindLenght: { length: null, type: "", item: "" },
   booksFindList: [],
   usersFindList: [],
   inforBookLoan: {
@@ -60,12 +60,22 @@ export const fetchLoanPerPage = createAsyncThunk(
           `${LOANS_URL}?limit=10&&page=${payload.indexPage}`
         );
 
-        return [...res.data];
+        return {
+          list: [...res.data],
+          indexPage: payload.indexPage,
+          type: "",
+          item: "",
+        };
       } else {
         const res = await axios.get(
           `${LOANS_URL}?${payload.type}=${payload.value}&&limit=10&&page=${payload.indexPage}`
         );
-        return [...res.data];
+        return {
+          list: [...res.data],
+          indexPage: payload.indexPage,
+          type: payload.type,
+          item: payload.value,
+        };
       }
     } catch (error) {
       return error.message;
@@ -77,10 +87,25 @@ export const loansFindLenght = createAsyncThunk(
   "loans/loansFindLenght",
   async (payload) => {
     try {
-      const res = await axios.get(
-        `${LOANS_URL}?${payload.type}=${payload.value}`
-      );
-      return [...res.data];
+      if (payload.value == "") {
+        const res = await axios.get(
+          `${LOANS_URL}?${payload.type}=${payload.value}`
+        );
+        return {
+          length: res.data.length,
+          type: payload.type,
+          item: payload.value,
+        };
+      } else {
+        const res = await axios.get(
+          `${LOANS_URL}?${payload.type}=${payload.value}`
+        );
+        return {
+          length: res.data.length,
+          type: payload.type,
+          item: payload.value,
+        };
+      }
     } catch (error) {
       return error.message;
     }

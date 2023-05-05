@@ -7,6 +7,7 @@ import { fetchLoans } from "../../redux/loansSlice";
 
 import {
   Box,
+  Stack,
   Grid,
   Card,
   CardHeader,
@@ -256,10 +257,17 @@ const Dashboard = () => {
                     gap={3}
                     wrap="nowrap">
                     <Avatar src={item.avatar} />
-
-                    <Typography variant="body1" noWrap>
-                      {item.name}
-                    </Typography>
+                    <Stack className="text-capitalize" sx={{ minWidth: 0 }}>
+                      <Typography variant="body1" noWrap>
+                        {item.name}
+                      </Typography>
+                      <Typography
+                        variant="body3"
+                        noWrap
+                        className="text-secondary">
+                        {item.role}
+                      </Typography>
+                    </Stack>
                   </Grid>
                 ))}
               </Grid>

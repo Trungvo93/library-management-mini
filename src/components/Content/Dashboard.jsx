@@ -42,6 +42,7 @@ const Dashboard = () => {
     setTotalPaid(total);
   }, [loans.loansList]);
 
+  //Get recent members
   const [recentMembers, setRecentMembers] = useState([]);
   useEffect(() => {
     if (users.usersList.length > 0) {
@@ -234,11 +235,11 @@ const Dashboard = () => {
         rowSpacing={1}
         columnSpacing={{ xs: 1, sm: 2, md: 3 }}
         sx={{ marginTop: "16px" }}>
-        <Grid item sm={6} xs={12}>
-          <Card>
+        <Grid item sm={4} xs={12}>
+          <Card className="shadow">
             <CardHeader
               title="Recently Added Members"
-              className="bg-danger text-white fw-bold mb-3"
+              className="fw-bold mb-3 border-bottom "
             />
             <CardContent>
               <Grid
@@ -248,24 +249,24 @@ const Dashboard = () => {
                 {recentMembers.map((item, index) => (
                   <Grid
                     item
-                    md={4}
-                    xs={6}
                     key={index}
                     container
-                    direction="column"
-                    alignItems="center">
-                    <Avatar
-                      src={item.avatar}
-                      sx={{ width: "50px", height: "50px" }}
-                    />
-                    <Typography variant="body1">{item.name}</Typography>
+                    direction="row"
+                    alignItems="center"
+                    gap={3}
+                    wrap="nowrap">
+                    <Avatar src={item.avatar} />
+
+                    <Typography variant="body1" noWrap>
+                      {item.name}
+                    </Typography>
                   </Grid>
                 ))}
               </Grid>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item sm={6} xs={12}>
+        <Grid item sm={8} xs={12}>
           <Card sx={{ backgroundColor: "green", color: "white" }}>bbb</Card>
         </Grid>
       </Grid>

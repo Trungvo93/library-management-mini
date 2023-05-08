@@ -124,9 +124,7 @@ const UserFindItem = () => {
           }}
           onChange={handleChange}
           getOptionLabel={(option) => {
-            {
-              return option.name + " - Student Code: " + option.studentCode;
-            }
+            return option.name + " - Student Code: " + option.studentCode;
           }}
           options={loans.usersFindList}
           renderInput={(params) => (

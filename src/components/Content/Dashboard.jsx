@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchBooks } from "../../redux/booksSlice";
 import { fetchLoans } from "../../redux/loansSlice";
+import { Table } from "react-bootstrap";
 
 import {
   Box,
@@ -43,14 +44,14 @@ const Dashboard = () => {
     setTotalPaid(total);
   }, [loans.loansList]);
 
-  //Get recent members
+  //Recently Added Members
   const [recentMembers, setRecentMembers] = useState([]);
   useEffect(() => {
     if (users.usersList.length > 0) {
       let recent = [];
       for (
         let i = users.usersList.length - 1;
-        i >= users.usersList.length - 6;
+        i >= users.usersList.length - 5;
         i--
       ) {
         recent.push(users.usersList[i]);
@@ -59,9 +60,26 @@ const Dashboard = () => {
     }
   }, [users.usersList]);
 
+  // Last Books Borrow
+  const [recentBorrows, setRecentBorrows] = useState([]);
+  useEffect(() => {
+    if (loans.loansList.length > 0) {
+      let recent = [];
+      for (
+        let i = loans.loansList.length - 1;
+        i >= loans.loansList.length - 8;
+        i--
+      ) {
+        recent.push(loans.loansList[i]);
+        setRecentBorrows(recent);
+      }
+    }
+  }, [loans.loansList]);
+  console.log("recentBorrows:", recentBorrows);
   return (
     <Box marginTop="16px" marginX="16px">
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+        {/* Session 1 */}
         <Grid item md={3} sm={6} xs={12}>
           <Card sx={{ backgroundColor: "#17A2B8", color: "white" }}>
             <Grid
@@ -231,16 +249,18 @@ const Dashboard = () => {
         </Grid>
       </Grid>
 
+      {/* Session 2 */}
       <Grid
         container
-        rowSpacing={1}
+        rowSpacing={4}
         columnSpacing={{ xs: 1, sm: 2, md: 3 }}
         sx={{ marginTop: "16px" }}>
-        <Grid item sm={4} xs={12}>
-          <Card className="shadow">
+        {/* Recently Added Members */}
+        <Grid item sm={4} md={3} xs={12}>
+          <Card className="shadow" sx={{ height: "100%" }}>
             <CardHeader
               title="Recently Added Members"
-              className="fw-bold mb-3 border-bottom "
+              className="fw-bold mb-3 border-bottom bg-secondary text-white "
             />
             <CardContent>
               <Grid
@@ -274,8 +294,41 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item sm={8} xs={12}>
-          <Card sx={{ backgroundColor: "green", color: "white" }}>bbb</Card>
+
+        {/* Last Books Borrow */}
+        <Grid item sm={8} md={9} xs={12}>
+          <Card className="shadow" sx={{ height: "100%" }}>
+            <CardHeader
+              title="Last Books Borrow"
+              className="fw-bold mb-3 border-bottom bg-secondary text-white "
+            />
+            <CardContent>
+              <Box className="table-responsive-xl ">
+                <Table striped bordered hover className="text-nowrap">
+                  <thead>
+                    <tr>
+                      <th>OrderID</th>
+                      <th>Student Name</th>
+                      <th>Title Book</th>
+                      <th>Amount</th>
+                      <th>Time Borrow</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentBorrows.map((item, index) => (
+                      <tr key={item.id} className="align-middle">
+                        <td>{item.id}</td>
+                        <td>{item.name}</td>
+                        <td>{item.title}</td>
+                        <td>{item.amount}</td>
+                        <td>{item.dayBorrow}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </Box>
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
     </Box>

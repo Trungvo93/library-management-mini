@@ -75,28 +75,64 @@ const Dashboard = () => {
       }
     }
   }, [loans.loansList]);
-  console.log("recentBorrows:", recentBorrows);
+
+  // Most Borrowed Books
+  const [topListBorrow, setTopListBorrow] = useState([]);
+  useEffect(() => {
+    const list = [];
+    if (topListBorrow.length == 0 && loans.loansList.length > 0) {
+      books.booksList.map((item) => {
+        list.push({
+          bookID: item.id,
+          title: item.title,
+          ISBN: item.ISBN,
+          countBorrow: 0,
+        });
+      });
+      list.forEach((item1, index1) => {
+        loans.loansList.forEach((item2, index2) => {
+          if (item2.ISBN === item1.ISBN) {
+            list[index1].countBorrow += Number(item2.amount);
+          }
+        });
+      });
+      for (let i = 0; i < list.length - 1; i++) {
+        let max = list[i].countBorrow;
+        let indexMax = i;
+        for (let j = i; j < list.length - 1; j++) {
+          if (max < list[j].countBorrow) {
+            max = list[j].countBorrow;
+            indexMax = j;
+          }
+        }
+        const tempt = { ...list[i] };
+        list[i] = { ...list[indexMax] };
+        list[indexMax] = { ...tempt };
+      }
+      setTopListBorrow([...list]);
+    }
+  }, [books.booksList]);
   return (
-    <Box marginTop="16px" marginX="16px">
+    <Box marginTop='16px' marginX='16px'>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         {/* Session 1 */}
         <Grid item md={3} sm={6} xs={12}>
           <Card sx={{ backgroundColor: "#17A2B8", color: "white" }}>
             <Grid
               container
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              padding="16px">
+              direction='row'
+              justifyContent='space-between'
+              alignItems='center'
+              padding='16px'>
               <Grid item>
-                <Typography variant="h3">
+                <Typography variant='h3'>
                   {users.usersList.length == 0 ? (
-                    <Skeleton variant="text" />
+                    <Skeleton variant='text' />
                   ) : (
                     users.usersList.length
                   )}
                 </Typography>
-                <Typography variant="body1">Users</Typography>
+                <Typography variant='body1'>Users</Typography>
               </Grid>
               <Grid item className={`${dashboardStyle.iconHover}`}>
                 <PeopleAltOutlinedIcon sx={{ fontSize: "56px" }} />
@@ -108,14 +144,14 @@ const Dashboard = () => {
               className={`${dashboardStyle.navigate}`}>
               <Grid
                 container
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
+                direction='row'
+                justifyContent='center'
+                alignItems='center'
                 gap={1}
                 onClick={() => {
                   navigate("/index/members");
                 }}>
-                <Typography variant="body1">More info </Typography>
+                <Typography variant='body1'>More info </Typography>
                 <ArrowCircleRightOutlinedIcon />
               </Grid>
             </CardActions>
@@ -126,19 +162,19 @@ const Dashboard = () => {
           <Card sx={{ backgroundColor: "#198754", color: "white" }}>
             <Grid
               container
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              padding="16px">
+              direction='row'
+              justifyContent='space-between'
+              alignItems='center'
+              padding='16px'>
               <Grid item>
-                <Typography variant="h3">
+                <Typography variant='h3'>
                   {books.booksList.length == 0 ? (
-                    <Skeleton variant="text" />
+                    <Skeleton variant='text' />
                   ) : (
                     books.booksList.length
                   )}
                 </Typography>
-                <Typography variant="body1">Books</Typography>
+                <Typography variant='body1'>Books</Typography>
               </Grid>
               <Grid item className={`${dashboardStyle.iconHover}`}>
                 <LibraryBooksOutlinedIcon sx={{ fontSize: "56px" }} />
@@ -150,14 +186,14 @@ const Dashboard = () => {
               className={`${dashboardStyle.navigate}`}>
               <Grid
                 container
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
+                direction='row'
+                justifyContent='center'
+                alignItems='center'
                 gap={1}
                 onClick={() => {
                   navigate("/index/books");
                 }}>
-                <Typography variant="body1">More info </Typography>
+                <Typography variant='body1'>More info </Typography>
                 <ArrowCircleRightOutlinedIcon />
               </Grid>
             </CardActions>
@@ -168,19 +204,19 @@ const Dashboard = () => {
           <Card sx={{ backgroundColor: "#FFC107", color: "white" }}>
             <Grid
               container
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              padding="16px">
+              direction='row'
+              justifyContent='space-between'
+              alignItems='center'
+              padding='16px'>
               <Grid item>
-                <Typography variant="h3">
+                <Typography variant='h3'>
                   {loans.loansList.length == 0 ? (
-                    <Skeleton variant="text" />
+                    <Skeleton variant='text' />
                   ) : (
                     loans.loansList.length
                   )}
                 </Typography>
-                <Typography variant="body1">Borrows</Typography>
+                <Typography variant='body1'>Borrows</Typography>
               </Grid>
               <Grid item className={`${dashboardStyle.iconHover}`}>
                 <IndeterminateCheckBoxOutlinedIcon sx={{ fontSize: "56px" }} />
@@ -192,14 +228,14 @@ const Dashboard = () => {
               className={`${dashboardStyle.navigate}`}>
               <Grid
                 container
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
+                direction='row'
+                justifyContent='center'
+                alignItems='center'
                 gap={1}
                 onClick={() => {
                   navigate("/index/libraryloan");
                 }}>
-                <Typography variant="body1">More info </Typography>
+                <Typography variant='body1'>More info </Typography>
                 <ArrowCircleRightOutlinedIcon />
               </Grid>
             </CardActions>
@@ -210,19 +246,19 @@ const Dashboard = () => {
           <Card sx={{ backgroundColor: "#DC3545", color: "white" }}>
             <Grid
               container
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              padding="16px">
+              direction='row'
+              justifyContent='space-between'
+              alignItems='center'
+              padding='16px'>
               <Grid item>
-                <Typography variant="h3">
+                <Typography variant='h3'>
                   {loans.loansList.length == 0 ? (
-                    <Skeleton variant="text" />
+                    <Skeleton variant='text' />
                   ) : (
                     totalPaid
                   )}
                 </Typography>
-                <Typography variant="body1">Returned</Typography>
+                <Typography variant='body1'>Returned</Typography>
               </Grid>
               <Grid item className={`${dashboardStyle.iconHover}`}>
                 <CheckBoxOutlinedIcon sx={{ fontSize: "56px" }} />
@@ -234,14 +270,14 @@ const Dashboard = () => {
               className={`${dashboardStyle.navigate}`}>
               <Grid
                 container
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
+                direction='row'
+                justifyContent='center'
+                alignItems='center'
                 gap={1}
                 onClick={() => {
                   navigate("/index/libraryloan");
                 }}>
-                <Typography variant="body1">More info </Typography>
+                <Typography variant='body1'>More info </Typography>
                 <ArrowCircleRightOutlinedIcon />
               </Grid>
             </CardActions>
@@ -257,10 +293,10 @@ const Dashboard = () => {
         sx={{ marginTop: "16px" }}>
         {/* Recently Added Members */}
         <Grid item sm={4} md={3} xs={12}>
-          <Card className="shadow" sx={{ height: "100%" }}>
+          <Card className='shadow' sx={{ height: "100%" }}>
             <CardHeader
-              title="Recently Added Members"
-              className="fw-bold mb-3 border-bottom bg-secondary text-white "
+              title='Recently Added Members'
+              className='fw-bold mb-3 border-bottom bg-secondary text-white '
             />
             <CardContent>
               <Grid
@@ -272,19 +308,19 @@ const Dashboard = () => {
                     item
                     key={index}
                     container
-                    direction="row"
-                    alignItems="center"
+                    direction='row'
+                    alignItems='center'
                     gap={3}
-                    wrap="nowrap">
+                    wrap='nowrap'>
                     <Avatar src={item.avatar} />
-                    <Stack className="text-capitalize" sx={{ minWidth: 0 }}>
-                      <Typography variant="body1" noWrap>
+                    <Stack className='text-capitalize' sx={{ minWidth: 0 }}>
+                      <Typography variant='body1' noWrap>
                         {item.name}
                       </Typography>
                       <Typography
-                        variant="body3"
+                        variant='body3'
                         noWrap
-                        className="text-secondary">
+                        className='text-secondary'>
                         {item.role}
                       </Typography>
                     </Stack>
@@ -297,14 +333,14 @@ const Dashboard = () => {
 
         {/* Last Books Borrow */}
         <Grid item sm={8} md={9} xs={12}>
-          <Card className="shadow" sx={{ height: "100%" }}>
+          <Card className='shadow' sx={{ height: "100%" }}>
             <CardHeader
-              title="Last Books Borrow"
-              className="fw-bold mb-3 border-bottom bg-secondary text-white "
+              title='Last Books Borrow'
+              className='fw-bold mb-3 border-bottom bg-secondary text-white '
             />
             <CardContent>
-              <Box className="table-responsive-xl ">
-                <Table striped bordered hover className="text-nowrap">
+              <Box className='table-responsive-xl '>
+                <Table striped bordered hover className='text-nowrap'>
                   <thead>
                     <tr>
                       <th>OrderID</th>
@@ -316,7 +352,7 @@ const Dashboard = () => {
                   </thead>
                   <tbody>
                     {recentBorrows.map((item, index) => (
-                      <tr key={item.id} className="align-middle">
+                      <tr key={item.id} className='align-middle'>
                         <td>{item.id}</td>
                         <td>{item.name}</td>
                         <td>{item.title}</td>
@@ -324,6 +360,91 @@ const Dashboard = () => {
                         <td>{item.dayBorrow}</td>
                       </tr>
                     ))}
+                  </tbody>
+                </Table>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Session 3 */}
+      <Grid
+        container
+        rowSpacing={4}
+        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+        sx={{ marginTop: "16px" }}>
+        {/* Most Borrowed Books */}
+        <Grid item lg={4} md={6} xs={12}>
+          <Card className='shadow' sx={{ height: "100%" }}>
+            <CardHeader
+              title='Most Borrowed Books'
+              className='fw-bold mb-3 border-bottom bg-secondary text-white '
+            />
+            <CardContent>
+              <Box className='table-responsive-xl '>
+                <Table striped bordered hover className='text-nowrap'>
+                  <thead>
+                    <tr>
+                      <th>BookID</th>
+                      <th>Title</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topListBorrow.map((item, index) => {
+                      if (index < 10) {
+                        return (
+                          <tr key={item.id} className='align-middle'>
+                            <td>{item.bookID}</td>
+                            <td>{item.title}</td>
+                            <td>{item.countBorrow}</td>
+                          </tr>
+                        );
+                      }
+                    })}
+                  </tbody>
+                </Table>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Recently Added Books */}
+        <Grid item lg={8} md={6} xs={12}>
+          <Card className='shadow' sx={{ height: "100%" }}>
+            <CardHeader
+              title='Recently Added Books'
+              className='fw-bold mb-3 border-bottom bg-secondary text-white '
+            />
+            <CardContent>
+              <Box className='table-responsive-xl '>
+                <Table striped bordered hover className='text-nowrap'>
+                  <thead>
+                    <tr>
+                      <th>BookID</th>
+                      <th>Title</th>
+                      <th>Amount</th>
+                      <th>Author</th>
+                      <th>Publisher</th>
+                      <th>Category</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {books.booksList.map((item, index) => {
+                      if (index > books.booksList.length - 11) {
+                        return (
+                          <tr key={item.id} className='align-middle'>
+                            <td>{item.id}</td>
+                            <td>{item.title}</td>
+                            <td>{item.amount}</td>
+                            <td>{item.author}</td>
+                            <td>{item.publisher}</td>
+                            <th>{item.category}</th>
+                          </tr>
+                        );
+                      }
+                    })}
                   </tbody>
                 </Table>
               </Box>

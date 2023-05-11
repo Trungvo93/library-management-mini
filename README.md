@@ -1,70 +1,21 @@
-# Getting Started with Create React App
+**This is  a project for library management to borrow and return books**
+>This is Beta version, can update more functions
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Link Demo: [Click here](library-project-beta-v1-kb6uxsims-trungvo93.vercel.app)
+Contact me for a demo account via Email: thanhtrungvo1993@gmail.com
 
-## Available Scripts
+<p>Here are some demos: </p>
+<p>Login page</p>
+<img alt="Login Page" src="https://firebasestorage.googleapis.com/v0/b/fir-6d711.appspot.com/o/library%2Flogin-page.png?alt=media&token=277b29b3-a9d2-4edd-bcf9-fbf56daceb90" width="50%">
 
-In the project directory, you can run:
+<p>Dashboard page</p>
+<img alt="Dashboard Page" src="https://firebasestorage.googleapis.com/v0/b/fir-6d711.appspot.com/o/library%2Fdashboard.png?alt=media&token=712544cf-4993-461a-8520-f6444321e7ad" width="50%">
 
-### `npm start`
+<p>Members page</p>
+<img alt="Members Page" src="https://firebasestorage.googleapis.com/v0/b/fir-6d711.appspot.com/o/library%2Fmembers.png?alt=media&token=4f3714ec-a34e-4c02-9933-e22527621a59" width="50%">
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+<p>Books page</p>
+<img alt="Books Page" src="https://firebasestorage.googleapis.com/v0/b/fir-6d711.appspot.com/o/library%2Fboooks.png?alt=media&token=faa5c5ef-68b7-4b50-87eb-81d2467cd7f1" width="50%">
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+<p>Loans page</p>
+<img alt="Loans Page" src="https://firebasestorage.googleapis.com/v0/b/fir-6d711.appspot.com/o/library%2Floans.png?alt=media&token=93fdb420-157a-47b6-b14d-70cd19710d99" width="50%">
